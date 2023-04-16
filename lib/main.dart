@@ -30,11 +30,7 @@ class _NewsAppState extends State<NewsApp> {
   List items = [];
   String status = '';
 
-  var url = 'https://newsapi.org/v2/everything?' +
-      'q=Apple&' +
-      'from=2023-04-16&' +
-      'sortBy=popularity&' +
-      'apiKey=d29107383eac4c97989831bb265caaaa';
+  var url = 'https://newsapi.org/v2/everything?q=Apple&from=2023-04-15&sortBy=popularity&apiKey=d29107383eac4c97989831bb265caaaa';
 
   Future<void> getData() async {
     var response = await Dio().get(url);
@@ -55,19 +51,22 @@ class _NewsAppState extends State<NewsApp> {
       appBar: AppBar(
         title: Text('Status: $status'),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: items.length,
-        itemBuilder: (BuildContext context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return Card(
             child: Column(
               children: <Widget>[
                 ListTile(
-                  title: Text(items[index]['title']),
-                  subtitle: Text(items[index]['author']),
+                  title: Text(items[index]['title'] ??'Unknown Title'), // タイトルがnullの場合は、'Unknown Title'を表示),
+                  subtitle: Text(items[index]['author'] ??'Unknown Author'), // タイトルがnullの場合は、'Unknown Author'を表示),
                 ),
               ],
             ),
           );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(); // 区切り線を追加
         },
       ),
     );
