@@ -28,7 +28,6 @@ class NewsApp extends StatefulWidget {
 
 class _NewsAppState extends State<NewsApp> {
   List items = [];
-  List imageList = [];
   String status = '';
 
   var url = 'https://newsapi.org/v2/everything?' +
@@ -40,7 +39,7 @@ class _NewsAppState extends State<NewsApp> {
   Future<void> getData() async {
     var response = await Dio().get(url);
     status = response.data['status'];
-    imageList = response.data['articles'];
+    items = response.data['articles'];
     setState(() {});
     print(status);
   }
@@ -54,10 +53,22 @@ class _NewsAppState extends State<NewsApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('News App'),
+        title: Text('Status: $status'),
       ),
-      body: Center(
-        child: Text('Status: $status'),
+      body: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (BuildContext context, index) {
+          return Card(
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text(items[index]['title']),
+                  subtitle: Text(items[index]['author']),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
