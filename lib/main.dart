@@ -30,9 +30,9 @@ class NewsApp extends StatefulWidget {
 class _NewsAppState extends State<NewsApp> {
   List items = [];
   String status = '';
+  List country = ["🇯🇵", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇮🇹", "🇨🇦"];
 
-  var url =
-      'https://newsapi.org/v2/top-headlines?country=jp&apiKey=d29107383eac4c97989831bb265caaaa';
+  var url = 'https://newsapi.org/v2/top-headlines?country=it&apiKey=d29107383eac4c97989831bb265caaaa';
 
   Future<void> getData() async {
     var response = await Dio().get(url);
@@ -40,6 +40,10 @@ class _NewsAppState extends State<NewsApp> {
     items = response.data['articles'];
     setState(() {});
     print(status);
+  }
+
+  Future<void> _refreshNews() async {
+    await getData();
   }
 
   @override
@@ -50,39 +54,64 @@ class _NewsAppState extends State<NewsApp> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView.builder(
+          itemCount: 5,
+          itemBuilder: (BuildContext context, int index) {
+            return Column(
+              //センターにしたい
+              children: [
+                ListTile(
+                  title: Text(
+                    country[index],
+                    style: TextStyle(
+                      fontSize: 30,
+                    ),
+                  ),
+                ),
+                Divider(
+                  color: Color.fromARGB(255, 159, 152, 152),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
       appBar: AppBar(
         title: Text('Status: $status'),
       ),
-      body: ListView.separated(
-        itemCount: items.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text(items[index]['title'] ??
-                      'Unknown Title'), // タイトルがnullの場合は、'Unknown Title'を表示),
-                  subtitle: Text(items[index]['author'] ??
-                      'Unknown Author'), // タイトルがnullの場合は、'Unknown Author'を表示),
-                  trailing: Icon(Icons.arrow_forward),
-                  onTap: () async {
-                    final url =
-                        Uri.parse(items[index]['url'] ?? 'Unknown Title');
-                    if (await canLaunchUrl(url)) {
-                      launchUrl(url);
-                    } else {
-                      // ignore: avoid_print
-                      print("Can't launch url");
-                    }
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider(); // 区切り線を追加
-        },
+      body: RefreshIndicator(
+        onRefresh: _refreshNews,
+        child: ListView.separated(
+          itemCount: items.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(items[index]['title'] ?? 'Unknown Title'),
+                    subtitle: Text(items[index]['author'] ?? 'Unknown Author'),
+                    trailing: Icon(Icons.arrow_forward),
+                    onTap: () async {
+                      final url =
+                          Uri.parse(items[index]['url'] ?? 'Unknown Title');
+                      // ignore: deprecated_member_use
+                      if (await canLaunch(url.toString())) {
+                        // ignore: deprecated_member_use
+                        await launch(url.toString());
+                      } else {
+                        print("Can't launch url");
+                      }
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return Divider();
+          },
+        ),
       ),
     );
   }
