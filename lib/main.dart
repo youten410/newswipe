@@ -30,11 +30,13 @@ class NewsApp extends StatefulWidget {
 class _NewsAppState extends State<NewsApp> {
   List items = [];
   String status = '';
-  List country = ["🇯🇵", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇮🇹", "🇨🇦"];
+  List menuItem = ['フランス','米国','英国','ドイツ','日本','イタリア','カナダ'];
+  String country = 'jp';
+  String url = '';
 
-  var url = 'https://newsapi.org/v2/top-headlines?country=it&apiKey=d29107383eac4c97989831bb265caaaa';
-
-  Future<void> getData() async {
+  Future<void> getData(country) async {
+    var url = 'https://newsapi.org/v2/top-headlines?country=$country&apiKey=d29107383eac4c97989831bb265caaaa';
+    print(url);
     var response = await Dio().get(url);
     status = response.data['status'];
     items = response.data['articles'];
@@ -43,33 +45,42 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   Future<void> _refreshNews() async {
-    await getData();
+    await getData(country);
   }
 
   @override
   void initState() {
     super.initState();
-    getData();
+    url = 'https://newsapi.org/v2/top-headlines?country=$country&apiKey=d29107383eac4c97989831bb265caaaa';
+    getData(country);
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(
         child: ListView.builder(
-          itemCount: 5,
+          itemCount: menuItem.length,
           itemBuilder: (BuildContext context, int index) {
             return Column(
               //センターにしたい
               children: [
                 ListTile(
                   title: Text(
-                    country[index],
-                    style: TextStyle(
+                    menuItem[index],
+                    style: const TextStyle(
                       fontSize: 30,
                     ),
                   ),
+                  onTap: () {
+                    print(menuItem[index]);
+                    if (menuItem[index] == "日本") {
+                      getData("jp");
+                    }else{
+                      getData("us");
+                    }
+                  },
                 ),
-                Divider(
+                const Divider(
                   color: Color.fromARGB(255, 159, 152, 152),
                 ),
               ],
