@@ -32,16 +32,17 @@ class _NewsAppState extends State<NewsApp> {
   String status = '';
   List menuItem = ['フランス','米国','英国','ドイツ','日本','イタリア','カナダ'];
   String country = 'jp';
+  int countryIndex = 4;
   String url = '';
 
   Future<void> getData(country) async {
     var url = 'https://newsapi.org/v2/top-headlines?country=$country&apiKey=d29107383eac4c97989831bb265caaaa';
-    print(url);
+    //print(url);
     var response = await Dio().get(url);
     status = response.data['status'];
     items = response.data['articles'];
     setState(() {});
-    print(status);
+    //print(status);
   }
 
   Future<void> _refreshNews() async {
@@ -72,12 +73,37 @@ class _NewsAppState extends State<NewsApp> {
                     ),
                   ),
                   onTap: () {
-                    print(menuItem[index]);
-                    if (menuItem[index] == "日本") {
-                      getData("jp");
-                    }else{
-                      getData("us");
+                    switch (menuItem[index]) {
+                      case 'フランス':
+                        country = 'fr';
+                        countryIndex = 0;
+                        break;
+                      case '米国':
+                        country = 'us';
+                        countryIndex = 1;
+                        break;
+                      case '英国':
+                        country = 'uk';
+                        countryIndex = 2;
+                        break;
+                      case 'ドイツ':
+                        country = 'de';
+                        countryIndex = 3;
+                        break;
+                      case '日本':
+                        country = 'jp';
+                        countryIndex = 4;
+                        break;
+                      case 'イタリア':
+                        country = 'it';
+                        countryIndex = 5;
+                        break;
+                      case 'カナダ':
+                       country = 'ca';
+                       countryIndex = 6;
+                       break;
                     }
+                    getData(country);
                   },
                 ),
                 const Divider(
@@ -89,7 +115,7 @@ class _NewsAppState extends State<NewsApp> {
         ),
       ),
       appBar: AppBar(
-        title: Text('Status: $status'),
+        title: Text('${menuItem[countryIndex]}のニュース'),
       ),
       body: RefreshIndicator(
         onRefresh: _refreshNews,
