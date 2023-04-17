@@ -69,7 +69,7 @@ class _NewsAppState extends State<NewsApp> {
                   title: Text(
                     menuItem[index],
                     style: const TextStyle(
-                      fontSize: 30,
+                      fontSize: 20,
                     ),
                   ),
                   onTap: () {
