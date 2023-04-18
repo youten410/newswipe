@@ -85,7 +85,7 @@ class _NewsAppState extends State<NewsApp> {
                           countryIndex = 1;
                           break;
                         case '英国':
-                          country = 'uk';
+                          country = 'gb';
                           countryIndex = 2;
                           break;
                         case 'ドイツ':
