@@ -58,60 +58,63 @@ class _NewsAppState extends State<NewsApp> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView.builder(
-          itemCount: menuItem.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Column(
-              //センターにしたい
-              children: [
-                ListTile(
-                  title: Text(
-                    menuItem[index],
-                    style: const TextStyle(
-                      fontSize: 20,
+      drawer: Container(
+        width: 150,
+        child: Drawer(
+          child: ListView.builder(
+            itemCount: menuItem.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Column(
+                //センターにしたい
+                children: [
+                  ListTile(
+                    title: Text(
+                      menuItem[index],
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
+                    onTap: () {
+                      switch (menuItem[index]) {
+                        case 'フランス':
+                          country = 'fr';
+                          countryIndex = 0;
+                          break;
+                        case '米国':
+                          country = 'us';
+                          countryIndex = 1;
+                          break;
+                        case '英国':
+                          country = 'uk';
+                          countryIndex = 2;
+                          break;
+                        case 'ドイツ':
+                          country = 'de';
+                          countryIndex = 3;
+                          break;
+                        case '日本':
+                          country = 'jp';
+                          countryIndex = 4;
+                          break;
+                        case 'イタリア':
+                          country = 'it';
+                          countryIndex = 5;
+                          break;
+                        case 'カナダ':
+                         country = 'ca';
+                         countryIndex = 6;
+                         break;
+                      }
+                      getData(country);
+                    },
                   ),
-                  onTap: () {
-                    switch (menuItem[index]) {
-                      case 'フランス':
-                        country = 'fr';
-                        countryIndex = 0;
-                        break;
-                      case '米国':
-                        country = 'us';
-                        countryIndex = 1;
-                        break;
-                      case '英国':
-                        country = 'uk';
-                        countryIndex = 2;
-                        break;
-                      case 'ドイツ':
-                        country = 'de';
-                        countryIndex = 3;
-                        break;
-                      case '日本':
-                        country = 'jp';
-                        countryIndex = 4;
-                        break;
-                      case 'イタリア':
-                        country = 'it';
-                        countryIndex = 5;
-                        break;
-                      case 'カナダ':
-                       country = 'ca';
-                       countryIndex = 6;
-                       break;
-                    }
-                    getData(country);
-                  },
-                ),
-                const Divider(
-                  color: Color.fromARGB(255, 159, 152, 152),
-                ),
-              ],
-            );
-          },
+                  const Divider(
+                    color: Color.fromARGB(255, 159, 152, 152),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
       appBar: AppBar(
