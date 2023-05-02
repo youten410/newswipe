@@ -128,6 +128,7 @@ class _NewsAppState extends State<NewsApp> {
 
   String url = '';
 
+
   Future<void> getData(country, category) async {
     var url =
         'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
@@ -257,6 +258,22 @@ class _NewsAppState extends State<NewsApp> {
       ),
       appBar: AppBar(
         title: Text('${menuItem[countryIndex]}のニュース'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut(); // ログアウト処理
+              await Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) {
+                  return loginPage();
+                }),
+              );
+            },
+            child: Text(
+              'ログアウト',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
