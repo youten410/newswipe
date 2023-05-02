@@ -2,8 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
@@ -11,16 +18,43 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Swipe Cards Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: NewsApp(),
+      home: loginPage(),
     );
   }
 }
 
+//ログインページ
+class loginPage extends StatefulWidget {
+  const loginPage({super.key});
+  @override
+  State<loginPage> createState() => _loginPageState();
+}
+
+class _loginPageState extends State<loginPage> {
+  final _auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ログインページ'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SignInButton(
+              Buttons.Google,
+              text: "Sign up with Google",
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//News閲覧ページ
 class NewsApp extends StatefulWidget {
   const NewsApp({Key? key}) : super(key: key);
 
@@ -35,13 +69,13 @@ class _NewsAppState extends State<NewsApp> {
   String country = 'jp';
   int countryIndex = 4;
 
-  List<String> categoryList = ['経済', 'エンタメ', 'ヘルス','科学','スポーツ','テクノロジー'];
+  List<String> categoryList = ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'];
   String category = 'business';
   int categoryIndex = 0;
-  
+
   String url = '';
 
-  Future<void> getData(country,category) async {
+  Future<void> getData(country, category) async {
     var url =
         'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     //print(url);
@@ -53,7 +87,7 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   Future<void> _refreshNews() async {
-    await getData(country,category);
+    await getData(country, category);
   }
 
   @override
@@ -61,7 +95,7 @@ class _NewsAppState extends State<NewsApp> {
     super.initState();
     url =
         'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    getData(country,category);
+    getData(country, category);
   }
 
   Widget buildCategoryList(BuildContext context, int index) {
@@ -70,7 +104,7 @@ class _NewsAppState extends State<NewsApp> {
       child: MenuItemButton(
         onPressed: () {
           print("${categoryList[index]}が選択されました");
-          switch (categoryList[index]){
+          switch (categoryList[index]) {
             case '経済':
               category = 'business';
               categoryIndex = 0;
@@ -96,11 +130,13 @@ class _NewsAppState extends State<NewsApp> {
               categoryIndex = 5;
               break;
           }
-          getData(country,category);
+          getData(country, category);
         },
         child: Text(
           categoryList[index],
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(
+            color: Colors.black,
+          ),
         ),
       ),
     );
@@ -115,7 +151,6 @@ class _NewsAppState extends State<NewsApp> {
             itemCount: menuItem.length,
             itemBuilder: (BuildContext context, int index) {
               return Column(
-                //センターにしたい
                 children: [
                   ListTile(
                     title: Text(
@@ -155,7 +190,7 @@ class _NewsAppState extends State<NewsApp> {
                           countryIndex = 6;
                           break;
                       }
-                      getData(country,category);
+                      getData(country, category);
                     },
                   ),
                   const Divider(
