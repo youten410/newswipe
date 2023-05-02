@@ -32,11 +32,50 @@ class loginPage extends StatefulWidget {
 
 class _loginPageState extends State<loginPage> {
   final _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+  }
+
+  // Googleを使ってサインイン
+  Future<UserCredential> signInWithGoogle() async {
+    // 認証フローのトリガー
+    final googleUser = await GoogleSignIn(scopes: [
+      'email',
+    ]).signIn();
+    // リクエストから、認証情報を取得
+    final googleAuth = await googleUser!.authentication;
+    // クレデンシャルを新しく作成
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    // サインインしたら、UserCredentialを返す
+    return FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
   @override
   Widget build(BuildContext context) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        title: Text('ログインページ'),
+        title: const Text(
+          'Google Sign-In Demo',
+        ),
       ),
       body: Center(
         child: Column(
@@ -44,8 +83,22 @@ class _loginPageState extends State<loginPage> {
           children: [
             SignInButton(
               Buttons.Google,
-              text: "Sign up with Google",
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  final userCredential = await signInWithGoogle();
+                  await Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) {
+                      return NewsApp();
+                    }),
+                  );
+                } on FirebaseAuthException catch (e) {
+                  print('FirebaseAuthException');
+                  print('${e.code}');
+                } on Exception catch (e) {
+                  print('Exception');
+                  print('${e.toString()}');
+                }
+              },
             ),
           ],
         ),
