@@ -74,7 +74,7 @@ class _loginPageState extends State<loginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Google Sign-In Demo',
+          'ログイン',
         ),
       ),
       body: Center(
