@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: loginPage(),
+      home: NewsApp(),
     );
   }
 }
@@ -46,7 +46,7 @@ class _loginPageState extends State<loginPage> {
   }
 
   // Googleを使ってサインイン
-  Future<UserCredential> signInWithGoogle() async {
+  Future<User> signInWithGoogle() async {
     // 認証フローのトリガー
     final googleUser = await GoogleSignIn(scopes: [
       'email',
@@ -58,8 +58,8 @@ class _loginPageState extends State<loginPage> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    // サインインしたら、UserCredentialを返す
-    return FirebaseAuth.instance.signInWithCredential(credential);
+    // サインインしたら、Userを返す
+    return (await FirebaseAuth.instance.signInWithCredential(credential)).user!;
   }
 
   @override
@@ -85,7 +85,8 @@ class _loginPageState extends State<loginPage> {
               Buttons.Google,
               onPressed: () async {
                 try {
-                  final userCredential = await signInWithGoogle();
+                  final user = await signInWithGoogle();
+                  print('ユーザー名: ${user.displayName}');
                   await Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) {
                       return NewsApp();
@@ -118,9 +119,6 @@ class NewsApp extends StatefulWidget {
 class _NewsAppState extends State<NewsApp> {
   List items = [];
   String status = '';
-  List<String> menuItem = ['フランス', '米国', '英国', 'ドイツ', '日本', 'イタリア', 'カナダ'];
-  String country = 'jp';
-  int countryIndex = 4;
 
   List<String> categoryList = ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'];
   String category = 'business';
@@ -128,10 +126,9 @@ class _NewsAppState extends State<NewsApp> {
 
   String url = '';
 
-
-  Future<void> getData(country, category) async {
+  Future<void> getData(category) async {
     var url =
-        'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     //print(url);
     var response = await Dio().get(url);
     status = response.data['status'];
@@ -141,15 +138,15 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   Future<void> _refreshNews() async {
-    await getData(country, category);
+    await getData(category);
   }
 
   @override
   void initState() {
     super.initState();
     url =
-        'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    getData(country, category);
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    getData(category);
   }
 
   Widget buildCategoryList(BuildContext context, int index) {
@@ -184,7 +181,7 @@ class _NewsAppState extends State<NewsApp> {
               categoryIndex = 5;
               break;
           }
-          getData(country, category);
+          getData(category);
         },
         child: Text(
           categoryList[index],
@@ -198,66 +195,8 @@ class _NewsAppState extends State<NewsApp> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Container(
-        width: 150,
-        child: Drawer(
-          child: ListView.builder(
-            itemCount: menuItem.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      menuItem[index],
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    onTap: () {
-                      switch (menuItem[index]) {
-                        case 'フランス':
-                          country = 'fr';
-                          countryIndex = 0;
-                          break;
-                        case '米国':
-                          country = 'us';
-                          countryIndex = 1;
-                          break;
-                        case '英国':
-                          country = 'gb';
-                          countryIndex = 2;
-                          break;
-                        case 'ドイツ':
-                          country = 'de';
-                          countryIndex = 3;
-                          break;
-                        case '日本':
-                          country = 'jp';
-                          countryIndex = 4;
-                          break;
-                        case 'イタリア':
-                          country = 'it';
-                          countryIndex = 5;
-                          break;
-                        case 'カナダ':
-                          country = 'ca';
-                          countryIndex = 6;
-                          break;
-                      }
-                      getData(country, category);
-                    },
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 159, 152, 152),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
       appBar: AppBar(
-        title: Text('${menuItem[countryIndex]}のニュース'),
+        title: Text('ニュース'),
         actions: [
           TextButton(
             onPressed: () async {
