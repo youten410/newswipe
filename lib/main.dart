@@ -149,6 +149,17 @@ class _NewsAppState extends State<NewsApp> {
     getData(category);
   }
 
+  //ユーザー名の取得
+  var userName = '';
+
+  Future<String> getUserName() async {
+    DocumentSnapshot responseItem =
+        await FirebaseFirestore.instance.doc('test/test').get();
+    String userName = responseItem.get("userName");
+    return userName;
+  }
+
+  //カテゴリーボタンのウィジェット
   Widget buildCategoryList(BuildContext context, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1.0),
