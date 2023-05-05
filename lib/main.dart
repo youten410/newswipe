@@ -144,14 +144,6 @@ class _NewsAppState extends State<NewsApp> {
     await getData(category);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    url =
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    getData(category);
-  }
-
   //ユーザー名の取得
   var userName = '';
 
@@ -259,55 +251,124 @@ class _NewsAppState extends State<NewsApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('現在の天気'),
+        title: FutureBuilder<String>(
+          future: getWheatherInfo(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('エラー: ${snapshot.error}');
+            } else {
+              return Text('東京 ${snapshot.data}');
+            }
+          },
+        ),
+        toolbarHeight: 38,
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 50.0,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: categoryList.length,
-              itemBuilder: buildCategoryList,
-            ),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _refreshNews,
-              child: ListView.separated(
-                itemCount: items.length,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: Column(
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(items[index]['title'] ?? 'Unknown Title'),
-                          subtitle:
-                              Text(items[index]['author'] ?? 'Unknown Author'),
-                          trailing: Icon(Icons.arrow_forward),
-                          onTap: () async {
-                            final url = Uri.parse(
-                                items[index]['url'] ?? 'Unknown Title');
-                            // ignore: deprecated_member_use
-                            if (await canLaunch(url.toString())) {
-                              // ignore: deprecated_member_use
-                              await launch(url.toString());
-                            } else {
-                              print("Can't launch url");
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              height: 50.0,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: categoryList.length,
+                itemBuilder: buildCategoryList,
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _refreshNews,
+                child: ListView.separated(
+                  itemCount: items.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            title:
+                                Text(items[index]['title'] ?? 'Unknown Title'),
+                            subtitle: Text(
+                                items[index]['author'] ?? 'Unknown Author'),
+                            trailing: Icon(Icons.arrow_forward),
+                            onTap: () async {
+                              final url = Uri.parse(
+                                  items[index]['url'] ?? 'Unknown Title');
+                              // ignore: deprecated_member_use
+                              if (await canLaunch(url.toString())) {
+                                // ignore: deprecated_member_use
+                                await launch(url.toString());
+                              } else {
+                                print("Can't launch url");
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+      bottomNavigationBar: _BottomAppBar(),
+    );
+  }
+}
+
+class _BottomAppBar extends StatelessWidget {
+  const _BottomAppBar({
+    this.fabLocation = FloatingActionButtonLocation.endDocked,
+    this.shape = const CircularNotchedRectangle(),
+  });
+
+  final FloatingActionButtonLocation fabLocation;
+  final NotchedShape? shape;
+
+  static final List<FloatingActionButtonLocation> centerLocations =
+      <FloatingActionButtonLocation>[
+    FloatingActionButtonLocation.centerDocked,
+    FloatingActionButtonLocation.centerFloat,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      shape: shape,
+      color: Colors.blue,
+      // ignore: sort_child_properties_last
+      child: IconTheme(
+        data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              tooltip: 'Open navigation menu',
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                //menu
+              },
+            ),
+            if (centerLocations.contains(fabLocation)) const Spacer(),
+            IconButton(
+              tooltip: 'Search',
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            ),
+            IconButton(
+              tooltip: 'Favorite',
+              icon: const Icon(Icons.favorite),
+              onPressed: () {
+              },
+            ),
+          ],
+        ),
+      ),
+      height: 60,
     );
   }
 }
