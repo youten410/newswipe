@@ -7,6 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -158,6 +160,54 @@ class _NewsAppState extends State<NewsApp> {
         await FirebaseFirestore.instance.doc('test/test').get();
     String userName = responseItem.get("userName");
     return userName;
+  }
+
+  //天気情報取得
+  Future<double> getPrecipitationIntensity(
+      String appId, String coordinates) async {
+    final url = Uri.https('map.yahooapis.jp', '/weather/V1/place', {
+      'appid': appId,
+      'coordinates': coordinates,
+      'interval': '10',
+      'output': 'json',
+    });
+
+    final response = await http.get(url);
+    final data = json.decode(response.body);
+    return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
+        ['Rainfall'];
+  }
+
+  String judgeWeather(double precipitationIntensity) {
+    if (precipitationIntensity == 0) {
+      return '☀️';
+    } else if (precipitationIntensity < 2) {
+      return '☁️';
+    } else {
+      return '☂️';
+    }
+  }
+
+  Future<String> getWheatherInfo() async {
+    final appId = 'dj00aiZpPURvU0RNSTBwRzd6ViZzPWNvbnN1bWVyc2VjcmV0Jng9ZTc-';
+    final coordinates = '139.7616846,35.6046869';
+
+    final precipitationIntensity =
+        await getPrecipitationIntensity(appId, coordinates);
+    print('降水強度: $precipitationIntensity');
+
+    final weather = judgeWeather(precipitationIntensity);
+    print('天気: $weather');
+
+    return weather;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    url =
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    getData(category);
   }
 
   //カテゴリーボタンのウィジェット
