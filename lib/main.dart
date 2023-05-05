@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -204,26 +205,11 @@ class _NewsAppState extends State<NewsApp> {
     );
   }
 
+  //ニュース表示のウィジェット
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ニュース'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut(); // ログアウト処理
-              await Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) {
-                  return loginPage();
-                }),
-              );
-            },
-            child: Text(
-              'ログアウト',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
+        title: Text('現在の天気'),
       ),
       body: Column(
         children: [
