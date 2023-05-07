@@ -120,6 +120,8 @@ class NewsApp extends StatefulWidget {
 }
 
 class _NewsAppState extends State<NewsApp> {
+  Set<int> likedItems = {};
+
   List items = [];
   String status = '';
 
@@ -293,7 +295,31 @@ class _NewsAppState extends State<NewsApp> {
                                 Text(items[index]['title'] ?? 'Unknown Title'),
                             subtitle: Text(
                                 items[index]['author'] ?? 'Unknown Author'),
-                            trailing: Icon(Icons.arrow_forward),
+                            trailing: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    likedItems.contains(index)
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: likedItems.contains(index)
+                                        ? Colors.red
+                                        : null,
+                                  ),
+                                  iconSize: 20, // アイコンのサイズを変更
+                                  onPressed: () {
+                                    setState(() {
+                                      if (likedItems.contains(index)) {
+                                        likedItems.remove(index);
+                                      } else {
+                                        likedItems.add(index);
+                                      }
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
                             onTap: () async {
                               final url = Uri.parse(
                                   items[index]['url'] ?? 'Unknown Title');
@@ -348,9 +374,15 @@ class _BottomAppBar extends StatelessWidget {
           children: <Widget>[
             IconButton(
               tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.login),
               onPressed: () {
-                //menu
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => loginPage(),
+                    fullscreenDialog: true,
+                  ),
+                );
               },
             ),
             if (centerLocations.contains(fabLocation)) const Spacer(),
@@ -362,13 +394,30 @@ class _BottomAppBar extends StatelessWidget {
             IconButton(
               tooltip: 'Favorite',
               icon: const Icon(Icons.favorite),
-              onPressed: () {
-              },
+              onPressed: () {},
             ),
           ],
         ),
       ),
       height: 60,
+    );
+  }
+}
+
+class appMnu extends StatefulWidget {
+  const appMnu({super.key});
+
+  @override
+  State<appMnu> createState() => _appMnuState();
+}
+
+class _appMnuState extends State<appMnu> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('メニュー'),
+      ),
     );
   }
 }
