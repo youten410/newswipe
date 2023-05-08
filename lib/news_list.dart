@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:news_app/custom_bottom_bar.dart';
+import 'dart:math';
 
 //News閲覧ページ
 class NewsApp extends StatefulWidget {
@@ -210,11 +211,32 @@ class _NewsAppState extends State<NewsApp> {
                                   ),
                                   iconSize: 20,
                                   onPressed: () {
+                                    //ボタンの表示・非表示
                                     setState(() {
-                                      if (likedItems.contains(index)) {
-                                        likedItems.remove(index);
+                                      int likedIndex = likedItems.firstWhere(
+                                          (element) => element == index,
+                                          orElse: () => -1);
+                                      if (likedIndex != -1) {
+                                        String articleId = 'article_' +
+                                            likedIndex
+                                                .toString()
+                                                .padLeft(3, '0');
+                                        likedItems.remove(likedIndex);
+                                        FirebaseFirestore.instance
+                                            .doc('liked_articles/$articleId')
+                                            .delete();
                                       } else {
+                                        String articleId = 'article_' +
+                                            index.toString().padLeft(3, '0');
                                         likedItems.add(index);
+                                        FirebaseFirestore.instance
+                                            .doc('liked_articles/$articleId')
+                                            .set({
+                                          'title': items[index]['title'] ??
+                                              'Unknown Title',
+                                          'url': items[index]['url'] ??
+                                              'Unknown URL',
+                                        });
                                       }
                                     });
                                   },
