@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/favorite_article.dart';
 import 'package:news_app/login_page.dart';
 
 class CustomBottomAppBar extends StatefulWidget {
@@ -53,7 +54,15 @@ class CustomBottomAppBarState extends State<CustomBottomAppBar> {
             IconButton(
               tooltip: 'Favorite',
               icon: const Icon(Icons.favorite),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FavoriteArticle(),
+                    fullscreenDialog: true,
+                  ),
+                );
+              },
             ),
           ],
         ),
