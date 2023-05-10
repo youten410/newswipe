@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:news_app/news_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteArticle extends StatefulWidget {
   const FavoriteArticle({Key? key}) : super(key: key);
@@ -55,13 +56,19 @@ class _FavoriteArticleState extends State<FavoriteArticle> {
                           Column(mainAxisSize: MainAxisSize.min, children: [
                         IconButton(
                           icon: Icon(Icons.restore_from_trash),
-                          onPressed: () {
-                            //ニュースをお気に入りから消す
-                            setState(() {
-                              FirebaseFirestore.instance
-                                  .doc('liked_articles/${doc.id}')
-                                  .delete();
-                            });
+                          onPressed: () async {
+                            FirebaseFirestore.instance
+                                .doc('liked_articles/${doc.id}')
+                                .delete();
+
+                            final prefs = await SharedPreferences.getInstance();
+                            final likedItemsList =
+                                prefs.getStringList('likedItems') ?? [];
+                            likedItemsList.remove(doc.id.split('_')[1]);
+                            await prefs.setStringList(
+                                'likedItems', likedItemsList);
+
+                            setState(() {});
                           },
                         )
                       ]),
