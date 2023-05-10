@@ -102,6 +102,15 @@ class _NewsAppState extends State<NewsApp> {
     url =
         'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
+    _syncLikedItems();
+  }
+
+  Future<void> _syncLikedItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final likedItemsList = prefs.getStringList('likedItems') ?? [];
+    setState(() {
+      likedItems = likedItemsList.map(int.parse).toSet();
+    });
   }
 
   //カテゴリーボタンのウィジェット
