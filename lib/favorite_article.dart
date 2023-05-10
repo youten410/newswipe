@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:news_app/news_list.dart';
 
 class FavoriteArticle extends StatefulWidget {
   const FavoriteArticle({Key? key}) : super(key: key);
@@ -50,8 +51,20 @@ class _FavoriteArticleState extends State<FavoriteArticle> {
                   children: <Widget>[
                     ListTile(
                       title: Text(doc['title'] ?? 'Unknown Title'),
-                      // 他のドキュメントデータを表示する場合は以下のようにします
-                      // subtitle: Text(doc['subtitle'] ?? 'Unknown Subtitle'),
+                      trailing:
+                          Column(mainAxisSize: MainAxisSize.min, children: [
+                        IconButton(
+                          icon: Icon(Icons.restore_from_trash),
+                          onPressed: () {
+                            //ニュースをお気に入りから消す
+                            setState(() {
+                              FirebaseFirestore.instance
+                                  .doc('liked_articles/${doc.id}')
+                                  .delete();
+                            });
+                          },
+                        )
+                      ]),
                       onTap: () async {
                         final url = Uri.parse(doc['url'] ?? 'Unknown Title');
                         // ignore: deprecated_member_use
