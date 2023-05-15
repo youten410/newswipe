@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:news_app/news_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:news_app/news_list.dart';
 
 class FavoriteArticle extends StatefulWidget {
   const FavoriteArticle({Key? key}) : super(key: key);
@@ -14,11 +15,13 @@ class FavoriteArticle extends StatefulWidget {
 
 class _FavoriteArticleState extends State<FavoriteArticle> {
   late final FirebaseFirestore _firestore;
+  late Future<QuerySnapshot> collectionsFuture;
 
   @override
   void initState() {
     super.initState();
     _firestore = FirebaseFirestore.instance;
+    collectionsFuture = getCollections();
   }
 
   Future<QuerySnapshot> getCollections() async {
@@ -32,7 +35,7 @@ class _FavoriteArticleState extends State<FavoriteArticle> {
         title: Text('お気に入り'),
       ),
       body: FutureBuilder<QuerySnapshot>(
-        future: getCollections(),
+        future: collectionsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -64,11 +67,13 @@ class _FavoriteArticleState extends State<FavoriteArticle> {
                             final prefs = await SharedPreferences.getInstance();
                             final likedItemsList =
                                 prefs.getStringList('likedItems') ?? [];
-                            likedItemsList.remove(doc.id.split('_')[1]);
+                            likedItemsList.remove(doc.id);
                             await prefs.setStringList(
                                 'likedItems', likedItemsList);
 
-                            setState(() {});
+                            setState(() {
+                              collectionsFuture = getCollections();
+                            });
                           },
                         )
                       ]),
