@@ -14,6 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'package:news_app/favorite_article.dart';
 
+Set<String> likedItems = {};
+
 //News閲覧ページ
 class NewsApp extends StatefulWidget {
   const NewsApp({Key? key}) : super(key: key);
@@ -23,7 +25,6 @@ class NewsApp extends StatefulWidget {
 }
 
 class _NewsAppState extends State<NewsApp> {
-  Set<String> likedItems = {};
 
   List items = [];
   String status = '';
@@ -102,13 +103,20 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    url =
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    getData(category);
-    _syncLikedItems();
-  }
+void initState() {
+  super.initState();
+  url =
+      'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+  getData(category);
+
+  FirebaseFirestore.instance.collection('liked_articles').snapshots().listen((snapshot) {
+    likedItems.clear();
+    for (var doc in snapshot.docs) {
+      likedItems.add(doc.id);
+    }
+    setState(() {});
+  });
+}
 
   Future<void> _syncLikedItems() async {
     final prefs = await SharedPreferences.getInstance();
