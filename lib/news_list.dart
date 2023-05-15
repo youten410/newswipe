@@ -10,6 +10,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:news_app/custom_bottom_bar.dart';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
+import 'package:news_app/favorite_article.dart';
 
 //News閲覧ページ
 class NewsApp extends StatefulWidget {
@@ -20,10 +23,12 @@ class NewsApp extends StatefulWidget {
 }
 
 class _NewsAppState extends State<NewsApp> {
-  Set<int> likedItems = {};
+  Set<String> likedItems = {};
 
   List items = [];
   String status = '';
+
+  String itemKey = '';
 
   List<String> categoryList = ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'];
   String category = 'business';
@@ -88,10 +93,10 @@ class _NewsAppState extends State<NewsApp> {
 
     final precipitationIntensity =
         await getPrecipitationIntensity(appId, coordinates);
-    print('降水強度: $precipitationIntensity');
+    //print('降水強度: $precipitationIntensity');
 
     final weather = judgeWeather(precipitationIntensity);
-    print('天気: $weather');
+    //print('天気: $weather');
 
     return weather;
   }
@@ -109,7 +114,7 @@ class _NewsAppState extends State<NewsApp> {
     final prefs = await SharedPreferences.getInstance();
     final likedItemsList = prefs.getStringList('likedItems') ?? [];
     setState(() {
-      likedItems = likedItemsList.map(int.parse).toSet();
+      likedItems = likedItemsList.toSet();
     });
   }
 
@@ -119,7 +124,7 @@ class _NewsAppState extends State<NewsApp> {
       padding: const EdgeInsets.symmetric(horizontal: 1.0),
       child: MenuItemButton(
         onPressed: () {
-          print("${categoryList[index]}が選択されました");
+          //print("${categoryList[index]}が選択されました");
           switch (categoryList[index]) {
             case '経済':
               category = 'business';
@@ -196,6 +201,10 @@ class _NewsAppState extends State<NewsApp> {
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(),
                   itemBuilder: (BuildContext context, int index) {
+                    // generate unique itemKey for each article
+                    String itemKey = md5
+                        .convert(utf8.encode(items[index]['url']))
+                        .toString();
                     return Card(
                       child: Column(
                         children: <Widget>[
@@ -210,43 +219,45 @@ class _NewsAppState extends State<NewsApp> {
                                 //いいねボタン
                                 IconButton(
                                   icon: Icon(
-                                    likedItems.contains(index)
+                                    likedItems.contains(itemKey)
                                         ? Icons.favorite
                                         : Icons.favorite_border,
-                                    color: likedItems.contains(index)
+                                    color: likedItems.contains(itemKey)
                                         ? Colors.red
                                         : null,
                                   ),
                                   iconSize: 20,
-                                  onPressed: () {
-                                    //ボタンの表示・非表示
-                                    setState(() {
-                                      int likedIndex = likedItems.firstWhere(
-                                          (element) => element == index,
-                                          orElse: () => -1);
-                                      if (likedIndex != -1) {
-                                        String articleId = 'article_' +
-                                            likedIndex
-                                                .toString()
-                                                .padLeft(3, '0');
-                                        likedItems.remove(likedIndex);
-                                        FirebaseFirestore.instance
-                                            .doc('liked_articles/$articleId')
-                                            .delete();
-                                      } else {
-                                        String articleId = 'article_' +
-                                            index.toString().padLeft(3, '0');
-                                        likedItems.add(index);
-                                        FirebaseFirestore.instance
-                                            .doc('liked_articles/$articleId')
-                                            .set({
-                                          'title': items[index]['title'] ??
-                                              'Unknown Title',
-                                          'url': items[index]['url'] ??
-                                              'Unknown URL',
-                                        });
-                                      }
-                                    });
+                                  onPressed: () async {
+                                    itemKey = md5
+                                        .convert(
+                                            utf8.encode(items[index]['url']))
+                                        .toString();
+
+                                    if (likedItems.contains(itemKey)) {
+                                      likedItems.remove(itemKey);
+                                      await FirebaseFirestore.instance
+                                          .doc('liked_articles/$itemKey')
+                                          .delete();
+                                    } else {
+                                      likedItems.add(itemKey);
+                                      await FirebaseFirestore.instance
+                                          .doc('liked_articles/$itemKey')
+                                          .set({
+                                        'title': items[index]['title'] ??
+                                            'Unknown Title',
+                                        'url': items[index]['url'] ??
+                                            'Unknown URL',
+                                      });
+                                    }
+
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
+                                    await prefs.setStringList(
+                                        'likedItems', likedItems.toList());
+
+                                    setState(() {});
+                                    //likedItems.clear();
+                                    print(likedItems);
                                   },
                                 )
                               ],
