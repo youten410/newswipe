@@ -8,11 +8,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:news_app/custom_bottom_bar.dart';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
-import 'package:news_app/favorite_article.dart';
 
 Set<String> likedItems = {};
 
@@ -223,52 +221,6 @@ void initState() {
                                 items[index]['author'] ?? 'Unknown Author'),
                             trailing: Column(
                               mainAxisSize: MainAxisSize.min,
-                              children: [
-                                //いいねボタン
-                                IconButton(
-                                  icon: Icon(
-                                    likedItems.contains(itemKey)
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: likedItems.contains(itemKey)
-                                        ? Colors.red
-                                        : null,
-                                  ),
-                                  iconSize: 20,
-                                  onPressed: () async {
-                                    itemKey = md5
-                                        .convert(
-                                            utf8.encode(items[index]['url']))
-                                        .toString();
-
-                                    if (likedItems.contains(itemKey)) {
-                                      likedItems.remove(itemKey);
-                                      await FirebaseFirestore.instance
-                                          .doc('liked_articles/$itemKey')
-                                          .delete();
-                                    } else {
-                                      likedItems.add(itemKey);
-                                      await FirebaseFirestore.instance
-                                          .doc('liked_articles/$itemKey')
-                                          .set({
-                                        'title': items[index]['title'] ??
-                                            'Unknown Title',
-                                        'url': items[index]['url'] ??
-                                            'Unknown URL',
-                                      });
-                                    }
-
-                                    final prefs =
-                                        await SharedPreferences.getInstance();
-                                    await prefs.setStringList(
-                                        'likedItems', likedItems.toList());
-
-                                    setState(() {});
-                                    //likedItems.clear();
-                                    print(likedItems);
-                                  },
-                                )
-                              ],
                             ),
                             onTap: () async {
                               final url = Uri.parse(
@@ -292,7 +244,6 @@ void initState() {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
     );
   }
 }
