@@ -23,6 +23,7 @@ class NewsApp extends StatefulWidget {
 }
 
 class _NewsAppState extends State<NewsApp> {
+  late int selectedButtonIndex = 0;
 
   List items = [];
   String status = '';
@@ -101,20 +102,23 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   @override
-void initState() {
-  super.initState();
-  url =
-      'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-  getData(category);
+  void initState() {
+    super.initState();
+    url =
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    getData(category);
 
-  FirebaseFirestore.instance.collection('liked_articles').snapshots().listen((snapshot) {
-    likedItems.clear();
-    for (var doc in snapshot.docs) {
-      likedItems.add(doc.id);
-    }
-    setState(() {});
-  });
-}
+    FirebaseFirestore.instance
+        .collection('liked_articles')
+        .snapshots()
+        .listen((snapshot) {
+      likedItems.clear();
+      for (var doc in snapshot.docs) {
+        likedItems.add(doc.id);
+      }
+      setState(() {});
+    });
+  }
 
   Future<void> _syncLikedItems() async {
     final prefs = await SharedPreferences.getInstance();
@@ -125,47 +129,85 @@ void initState() {
   }
 
   //カテゴリーボタンのウィジェット
-  Widget buildCategoryList(BuildContext context, int index) {
+Widget buildCategoryList(BuildContext context, int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1.0),
-      child: MenuItemButton(
-        onPressed: () {
-          //print("${categoryList[index]}が選択されました");
-          switch (categoryList[index]) {
-            case '経済':
-              category = 'business';
-              categoryIndex = 0;
-              break;
-            case 'エンタメ':
-              category = 'entertainment';
-              categoryIndex = 1;
-              break;
-            case 'ヘルス':
-              category = 'health';
-              categoryIndex = 2;
-              break;
-            case '科学':
-              category = 'science';
-              categoryIndex = 3;
-              break;
-            case 'スポーツ':
-              category = 'sports';
-              categoryIndex = 4;
-              break;
-            case 'テクノロジー':
-              category = 'technology';
-              categoryIndex = 5;
-              break;
-          }
-          getData(category);
-        },
-        child: Text(
-          categoryList[index],
-          style: const TextStyle(
-            color: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Container(
+          width: 100,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  if (selectedButtonIndex == index) {
+                    switch (categoryList[index]) {
+                      case '経済':
+                        return Colors.black;
+                      case 'エンタメ':
+                        return Colors.black;
+                      case 'ヘルス':
+                        return Colors.black;
+                      case '科学':
+                        return Colors.black;
+                      case 'スポーツ':
+                        return Colors.black;
+                      case 'テクノロジー':
+                        return Colors.black;
+                      default:
+                        return Colors.black;
+                    }
+                  }
+                  return Colors.white54;
+                },
+              ),
+              foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  if (selectedButtonIndex == index) {
+                    return Colors.white; 
+                  }
+                  return Colors.black;
+                },
+              )
+            ),
+            onPressed: () {
+              setState(() {
+                selectedButtonIndex = index;
+                switch (categoryList[index]) {
+                  case '経済':
+                    category = 'business';
+                    categoryIndex = 0;
+                    break;
+                  case 'エンタメ':
+                    category = 'entertainment';
+                    categoryIndex = 1;
+                    break;
+                  case 'ヘルス':
+                    category = 'health';
+                    categoryIndex = 2;
+                    break;
+                  case '科学':
+                    category = 'science';
+                    categoryIndex = 3;
+                    break;
+                  case 'スポーツ':
+                    category = 'sports';
+                    categoryIndex = 4;
+                    break;
+                  case 'テクノロジー':
+                    category = 'technology';
+                    categoryIndex = 5;
+                    break;
+                }
+                getData(category);
+              });
+            },
+            child: Text(
+              categoryList[index],
+              style: TextStyle(
+                fontSize: 10,
+              ),
+            ),
           ),
         ),
-      ),
     );
   }
 
@@ -186,13 +228,18 @@ void initState() {
           },
         ),
         toolbarHeight: 38,
+        titleTextStyle: TextStyle(
+          color: Colors.grey
+        ),
+        backgroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Container(
-              height: 50.0,
+              //カテゴリボタンの高さ調整
+              height: 30.0,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: categoryList.length,
