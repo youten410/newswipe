@@ -24,6 +24,7 @@ class NewsApp extends StatefulWidget {
 
 class _NewsAppState extends State<NewsApp> {
   late int selectedButtonIndex = 0;
+  String weatherInfo = "Loading...";
 
   List items = [];
   String status = '';
@@ -104,9 +105,9 @@ class _NewsAppState extends State<NewsApp> {
   @override
   void initState() {
     super.initState();
-    url =
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    url = 'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
+    initWeatherInfo(); // 初期化メソッドを呼び出します。
 
     FirebaseFirestore.instance
         .collection('liked_articles')
@@ -119,6 +120,13 @@ class _NewsAppState extends State<NewsApp> {
       setState(() {});
     });
   }
+
+    void initWeatherInfo() async {
+    weatherInfo = await getWheatherInfo();
+    setState(() {});
+  }
+
+
 
   Future<void> _syncLikedItems() async {
     final prefs = await SharedPreferences.getInstance();
@@ -215,18 +223,7 @@ Widget buildCategoryList(BuildContext context, int index) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<String>(
-          future: getWheatherInfo(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('エラー: ${snapshot.error}');
-            } else {
-              return Text('東京 ${snapshot.data}');
-            }
-          },
-        ),
+        title: Text('東京 $weatherInfo'), 
         toolbarHeight: 38,
         titleTextStyle: TextStyle(
           color: Colors.grey
