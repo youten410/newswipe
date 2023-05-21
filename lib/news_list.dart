@@ -105,7 +105,8 @@ class _NewsAppState extends State<NewsApp> {
   @override
   void initState() {
     super.initState();
-    url = 'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    url =
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
     initWeatherInfo(); // 初期化メソッドを呼び出します。
 
@@ -121,12 +122,10 @@ class _NewsAppState extends State<NewsApp> {
     });
   }
 
-    void initWeatherInfo() async {
+  void initWeatherInfo() async {
     weatherInfo = await getWheatherInfo();
     setState(() {});
   }
-
-
 
   Future<void> _syncLikedItems() async {
     final prefs = await SharedPreferences.getInstance();
@@ -136,86 +135,86 @@ class _NewsAppState extends State<NewsApp> {
     });
   }
 
+  bool isIconChanged = false;
+
   //カテゴリーボタンのウィジェット
-Widget buildCategoryList(BuildContext context, int index) {
+  Widget buildCategoryList(BuildContext context, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        child: Container(
-          width: 100,
-          child: ElevatedButton(
-            style: ButtonStyle(
+      child: Container(
+        width: 100,
+        child: ElevatedButton(
+          style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  if (selectedButtonIndex == index) {
-                    switch (categoryList[index]) {
-                      case '経済':
-                        return Colors.black;
-                      case 'エンタメ':
-                        return Colors.black;
-                      case 'ヘルス':
-                        return Colors.black;
-                      case '科学':
-                        return Colors.black;
-                      case 'スポーツ':
-                        return Colors.black;
-                      case 'テクノロジー':
-                        return Colors.black;
-                      default:
-                        return Colors.black;
-                    }
-                  }
-                  return Colors.white54;
-                },
-              ),
-              foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  if (selectedButtonIndex == index) {
-                    return Colors.white; 
-                  }
-                  return Colors.black;
-                },
-              )
-            ),
-            onPressed: () {
-              setState(() {
-                selectedButtonIndex = index;
+            (Set<MaterialState> states) {
+              if (selectedButtonIndex == index) {
                 switch (categoryList[index]) {
                   case '経済':
-                    category = 'business';
-                    categoryIndex = 0;
-                    break;
+                    return Colors.black;
                   case 'エンタメ':
-                    category = 'entertainment';
-                    categoryIndex = 1;
-                    break;
+                    return Colors.black;
                   case 'ヘルス':
-                    category = 'health';
-                    categoryIndex = 2;
-                    break;
+                    return Colors.black;
                   case '科学':
-                    category = 'science';
-                    categoryIndex = 3;
-                    break;
+                    return Colors.black;
                   case 'スポーツ':
-                    category = 'sports';
-                    categoryIndex = 4;
-                    break;
+                    return Colors.black;
                   case 'テクノロジー':
-                    category = 'technology';
-                    categoryIndex = 5;
-                    break;
+                    return Colors.black;
+                  default:
+                    return Colors.black;
                 }
-                getData(category);
-              });
+              }
+              return Colors.white54;
             },
-            child: Text(
-              categoryList[index],
-              style: TextStyle(
-                fontSize: 10,
-              ),
+          ), foregroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (selectedButtonIndex == index) {
+                return Colors.white;
+              }
+              return Colors.black;
+            },
+          )),
+          onPressed: () {
+            setState(() {
+              selectedButtonIndex = index;
+              switch (categoryList[index]) {
+                case '経済':
+                  category = 'business';
+                  categoryIndex = 0;
+                  break;
+                case 'エンタメ':
+                  category = 'entertainment';
+                  categoryIndex = 1;
+                  break;
+                case 'ヘルス':
+                  category = 'health';
+                  categoryIndex = 2;
+                  break;
+                case '科学':
+                  category = 'science';
+                  categoryIndex = 3;
+                  break;
+                case 'スポーツ':
+                  category = 'sports';
+                  categoryIndex = 4;
+                  break;
+                case 'テクノロジー':
+                  category = 'technology';
+                  categoryIndex = 5;
+                  break;
+              }
+              getData(category);
+            });
+          },
+          child: Text(
+            categoryList[index],
+            style: TextStyle(
+              fontSize: 10,
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -223,11 +222,22 @@ Widget buildCategoryList(BuildContext context, int index) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('東京 $weatherInfo'), 
+        title: Text('東京 $weatherInfo'),
+        leading: IconButton(
+            onPressed: () {
+              setState(() {
+                isIconChanged = !isIconChanged; //切り替え
+              });
+            },
+            color: Colors.black,
+            iconSize: 20,
+            icon: Icon(
+              isIconChanged
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode,
+            )),
         toolbarHeight: 38,
-        titleTextStyle: TextStyle(
-          color: Colors.grey
-        ),
+        titleTextStyle: TextStyle(color: Colors.grey),
         backgroundColor: Colors.white,
       ),
       body: Padding(
