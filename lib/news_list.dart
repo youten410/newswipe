@@ -226,12 +226,17 @@ class _NewsAppState extends State<NewsApp> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('東京 $weatherInfo'),
+        title: Text(
+          '東京 $weatherInfo',
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
         leading: IconButton(
           onPressed: () {
             themeNotifier.toggleTheme();
           },
-          color: Colors.black,
+          color: Theme.of(context).iconTheme.color,
           iconSize: 20,
           icon: Icon(
             themeNotifier.isDarkMode
@@ -240,8 +245,7 @@ class _NewsAppState extends State<NewsApp> {
           ),
         ),
         toolbarHeight: 38,
-        titleTextStyle: TextStyle(color: Colors.grey),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.color,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
