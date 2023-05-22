@@ -11,8 +11,11 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
+import 'package:provider/provider.dart';
+import 'main.dart';
 
 Set<String> likedItems = {};
+bool isDarkMode = false;
 
 //News閲覧ページ
 class NewsApp extends StatefulWidget {
@@ -220,22 +223,22 @@ class _NewsAppState extends State<NewsApp> {
 
   //ニュース表示のウィジェット
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('東京 $weatherInfo'),
         leading: IconButton(
-            onPressed: () {
-              setState(() {
-                isIconChanged = !isIconChanged; //切り替え
-              });
-            },
-            color: Colors.black,
-            iconSize: 20,
-            icon: Icon(
-              isIconChanged
-                  ? Icons.light_mode_outlined
-                  : Icons.dark_mode,
-            )),
+          onPressed: () {
+            themeNotifier.toggleTheme();
+          },
+          color: Colors.black,
+          iconSize: 20,
+          icon: Icon(
+            themeNotifier.isDarkMode
+                ? Icons.light_mode_outlined
+                : Icons.dark_mode_outlined,
+          ),
+        ),
         toolbarHeight: 38,
         titleTextStyle: TextStyle(color: Colors.grey),
         backgroundColor: Colors.white,
