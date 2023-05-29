@@ -38,8 +38,20 @@ class MyApp extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
       themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Colors.white,
+        ),
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Colors.black,
+      ),
+      darkTheme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Colors.grey.shade800,
+        ),
+        scaffoldBackgroundColor: Colors.grey.shade800,
+        primaryColor: Colors.white,
+      ),
       home: NewsApp(),
     );
   }
