@@ -142,6 +142,7 @@ class _NewsAppState extends State<NewsApp> {
 
   //カテゴリーボタンのウィジェット
   Widget buildCategoryList(BuildContext context, int index) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: Container(
@@ -153,29 +154,49 @@ class _NewsAppState extends State<NewsApp> {
               if (selectedButtonIndex == index) {
                 switch (categoryList[index]) {
                   case '経済':
-                    return Colors.black;
+                    //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   case 'エンタメ':
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   case 'ヘルス':
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   case '科学':
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   case 'スポーツ':
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   case 'テクノロジー':
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                   default:
-                    return Colors.black;
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
                 }
               }
-              return Colors.white54;
+              //カテゴリボタンのボックスの色　クリックされていない時　ダーク/ライト
+              return themeNotifier.isDarkMode
+                  ? Colors.grey.shade800
+                  : Colors.white;
             },
           ), foregroundColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (selectedButtonIndex == index) {
-                return Colors.white;
+                //カテゴリボタンのクリックされた時の色　ライト/ダーク
+                return themeNotifier.isDarkMode ? Colors.black : Colors.white;
               }
-              return Colors.black;
+              //カテゴリボタンのクリックされていない時の色　ライト/ダーク
+              return themeNotifier.isDarkMode ? Colors.white : Colors.black;
             },
           )),
           onPressed: () {
@@ -229,8 +250,7 @@ class _NewsAppState extends State<NewsApp> {
         title: Text(
           '東京 $weatherInfo',
           style: TextStyle(
-            color: Theme.of(context).primaryColor,
-          ),
+              color: themeNotifier.isDarkMode ? Colors.white : Colors.black),
         ),
         leading: IconButton(
           onPressed: () {
@@ -242,9 +262,11 @@ class _NewsAppState extends State<NewsApp> {
             themeNotifier.isDarkMode
                 ? Icons.light_mode_outlined
                 : Icons.dark_mode_outlined,
+            color: themeNotifier.isDarkMode ? Colors.white : Colors.black ,
           ),
         ),
         toolbarHeight: 38,
+        titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
         backgroundColor: Theme.of(context).appBarTheme.color,
       ),
       body: Padding(
@@ -260,6 +282,7 @@ class _NewsAppState extends State<NewsApp> {
                 itemBuilder: buildCategoryList,
               ),
             ),
+            Divider(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshNews,
@@ -273,13 +296,24 @@ class _NewsAppState extends State<NewsApp> {
                         .convert(utf8.encode(items[index]['url']))
                         .toString();
                     return Card(
+                      color: themeNotifier.isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.white,
                       child: Column(
                         children: <Widget>[
                           ListTile(
-                            title:
-                                Text(items[index]['title'] ?? 'Unknown Title'),
+                            title: Text(
+                              items[index]['title'] ?? 'Unknown Title',
+                              style: TextStyle(
+                                  color: themeNotifier.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black),
+                            ),
                             subtitle: Text(
                                 items[index]['author'] ?? 'Unknown Author'),
+                            textColor: themeNotifier.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
                             trailing: Column(
                               mainAxisSize: MainAxisSize.min,
                             ),
