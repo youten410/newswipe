@@ -300,10 +300,8 @@ class _NewsAppState extends State<NewsApp> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshNews,
-                child: ListView.separated(
+                child: ListView.builder(
                   itemCount: items.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
                   itemBuilder: (BuildContext context, int index) {
                     // generate unique itemKey for each article
                     String itemKey = md5
