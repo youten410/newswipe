@@ -47,9 +47,9 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(
         appBarTheme: AppBarTheme(
-          color: Colors.grey.shade800,
+          color: Colors.black,
         ),
-        scaffoldBackgroundColor: Colors.grey.shade800,
+        scaffoldBackgroundColor: Colors.black,
         primaryColor: Colors.white,
       ),
       home: NewsApp(),
