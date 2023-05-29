@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'package:provider/provider.dart';
 import 'main.dart';
+import 'package:geolocator/geolocator.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -91,6 +92,17 @@ class _NewsAppState extends State<NewsApp> {
     }
   }
 
+  void getLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low);
+          print('positon:$position');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  //天気情報取得パラメータ
   Future<String> getWheatherInfo() async {
     final appId = 'dj00aiZpPURvU0RNSTBwRzd6ViZzPWNvbnN1bWVyc2VjcmV0Jng9ZTc-';
     final coordinates = '139.7616846,35.6046869';
@@ -101,7 +113,6 @@ class _NewsAppState extends State<NewsApp> {
 
     final weather = judgeWeather(precipitationIntensity);
     //print('天気: $weather');
-
     return weather;
   }
 
@@ -111,7 +122,8 @@ class _NewsAppState extends State<NewsApp> {
     url =
         'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
-    initWeatherInfo(); // 初期化メソッドを呼び出します。
+    initWeatherInfo();
+    getLocation();
 
     FirebaseFirestore.instance
         .collection('liked_articles')
@@ -255,6 +267,7 @@ class _NewsAppState extends State<NewsApp> {
         leading: IconButton(
           onPressed: () {
             themeNotifier.toggleTheme();
+            getLocation();
           },
           color: Theme.of(context).iconTheme.color,
           iconSize: 20,
@@ -275,11 +288,12 @@ class _NewsAppState extends State<NewsApp> {
           children: [
             Container(
               //カテゴリボタンの高さ調整
-              height: 30.0,
+              height: 40,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: categoryList.length,
                 itemBuilder: buildCategoryList,
+                padding: EdgeInsets.only(bottom: 5),
               ),
             ),
             Divider(),
