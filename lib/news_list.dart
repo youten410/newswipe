@@ -58,6 +58,7 @@ class _NewsAppState extends State<NewsApp> {
   //天気情報取得
   Future<double> getPrecipitationIntensity(
       String appId, String coordinates) async {
+    print('coordinates : $coordinates');
     final url = Uri.https('map.yahooapis.jp', '/weather/V1/place', {
       'appid': appId,
       'coordinates': coordinates,
@@ -67,6 +68,7 @@ class _NewsAppState extends State<NewsApp> {
 
     final response = await http.get(url);
     final data = json.decode(response.body);
+    print(data);
     return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
         ['Rainfall'];
   }
@@ -84,25 +86,27 @@ class _NewsAppState extends State<NewsApp> {
   //位置情報取得
   Future<String> getLocation() async {
     try {
+      print('位置情報取得開始');
       //アクセス許可要求
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          // ユーザーが許可を拒否した場合の処理
-          print("Location permissions denied");
-          return "Permission denied"; // エラーメッセージを返す
-        }
-      }
+      // LocationPermission permission = await Geolocator.checkPermission();
+      // if (permission == LocationPermission.denied) {
+      //   permission = await Geolocator.requestPermission();
+      //   if (permission == LocationPermission.denied) {
+      //     // ユーザーが許可を拒否した場合の処理
+      //     print("Location permissions denied");
+      //     return "Permission denied"; // エラーメッセージを返す
+      //   }
+      // }
 
       // ユーザーが許可したら位置情報を取得
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low);
       var location = extractCoordinates(position.toString());
-      var keido = '129.9521775';//location[1];
-      var ido = '33.6495819';//location[0];
+      var keido = '133.6137351299371'; //location[1];
+      var ido = '33.535685882374985'; //location[0];
       var coordinates = keido + ',' + ido;
 
+      print(coordinates);
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
       final response = await http.get(Uri.parse(
@@ -114,14 +118,14 @@ class _NewsAppState extends State<NewsApp> {
       var prefectureName = decodedResponse['results'][0]['address_components']
               [2]['long_name']
           .toString();
-      var presentLocationName = prefectureName + cityName;
-      
+      presentLocationName = prefectureName + cityName;
+
       print('場所:$presentLocationName');
 
-      return presentLocationName;
+      return coordinates;
     } catch (e) {
       print(e);
-      return "Error: $e"; // エラーメッセージを返す
+      return "Error: $e";
     }
   }
 
@@ -144,10 +148,9 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   //天気情報取得パラメータ
-  Future<String> getWheatherInfo() async {
+  Future<String> getWheatherInfo(String coordinates) async {
+    print('天気情報取得開始');
     final appId = 'dj00aiZpPURvU0RNSTBwRzd6ViZzPWNvbnN1bWVyc2VjcmV0Jng9ZTc-';
-    var coordinates = getLocation().toString();
-
     final precipitationIntensity =
         await getPrecipitationIntensity(appId, coordinates);
     print('降水強度: $precipitationIntensity');
@@ -163,12 +166,15 @@ class _NewsAppState extends State<NewsApp> {
     url =
         'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
+    getLocation();
     initWeatherInfo();
-    initLocation();
   }
 
   void initWeatherInfo() async {
-    weatherInfo = await getWheatherInfo();
+    print('getLocationの呼び出し');
+    String coordinates = await getLocation();
+    print('getWheatherInfoの呼び出し');
+    weatherInfo = await getWheatherInfo(coordinates);
     setState(() {});
   }
 
@@ -178,12 +184,6 @@ class _NewsAppState extends State<NewsApp> {
     setState(() {
       likedItems = likedItemsList.toSet();
     });
-  }
-
-  void initLocation() async {
-    String coordinates = await getLocation();
-    presentLocationName = coordinates;
-    setState(() {});
   }
 
   bool isIconChanged = false;
@@ -295,6 +295,7 @@ class _NewsAppState extends State<NewsApp> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         title: Text(
           //天気アイコンのサイズ変更
           '$presentLocationName $weatherInfo',
@@ -304,7 +305,6 @@ class _NewsAppState extends State<NewsApp> {
         leading: IconButton(
           onPressed: () {
             themeNotifier.toggleTheme();
-            getWheatherInfo();
           },
           color: Theme.of(context).iconTheme.color,
           iconSize: 20,
