@@ -52,16 +52,6 @@ class _NewsAppState extends State<NewsApp> {
     await getData(category);
   }
 
-  //ユーザー名の取得
-  var userName = '';
-
-  Future<String> getUserName() async {
-    DocumentSnapshot responseItem =
-        await FirebaseFirestore.instance.doc('test/test').get();
-    String userName = responseItem.get("userName");
-    return userName;
-  }
-
   //天気情報取得
   Future<double> getPrecipitationIntensity(
       String appId, String coordinates) async {
@@ -171,18 +161,7 @@ class _NewsAppState extends State<NewsApp> {
         'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     getData(category);
     initWeatherInfo();
-    getLocation();
-
-    FirebaseFirestore.instance
-        .collection('liked_articles')
-        .snapshots()
-        .listen((snapshot) {
-      likedItems.clear();
-      for (var doc in snapshot.docs) {
-        likedItems.add(doc.id);
-      }
-      setState(() {});
-    });
+    initLocation();
   }
 
   void initWeatherInfo() async {
