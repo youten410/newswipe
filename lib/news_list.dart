@@ -10,6 +10,8 @@ import 'package:crypto/crypto.dart';
 import 'package:provider/provider.dart';
 import 'main.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -25,6 +27,7 @@ class NewsApp extends StatefulWidget {
 class _NewsAppState extends State<NewsApp> {
   late int selectedButtonIndex = 0;
   String weatherInfo = "Loading...";
+  String presentLocationName = 'Loading...';
 
   List items = [];
   String status = '';
@@ -143,11 +146,11 @@ class _NewsAppState extends State<NewsApp> {
   //天気情報取得パラメータ
   Future<String> getWheatherInfo() async {
     final appId = 'dj00aiZpPURvU0RNSTBwRzd6ViZzPWNvbnN1bWVyc2VjcmV0Jng9ZTc-';
-    final coordinates = '139.7616846,35.6046869';
+    var coordinates = getLocation().toString();
 
     final precipitationIntensity =
         await getPrecipitationIntensity(appId, coordinates);
-    //print('降水強度: $precipitationIntensity');
+    print('降水強度: $precipitationIntensity');
 
     final weather = judgeWeather(precipitationIntensity);
     //print('天気: $weather');
@@ -175,6 +178,12 @@ class _NewsAppState extends State<NewsApp> {
     setState(() {
       likedItems = likedItemsList.toSet();
     });
+  }
+
+  void initLocation() async {
+    String coordinates = await getLocation();
+    presentLocationName = coordinates;
+    setState(() {});
   }
 
   bool isIconChanged = false;
@@ -287,14 +296,15 @@ class _NewsAppState extends State<NewsApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '東京 $weatherInfo',
+          //天気アイコンのサイズ変更
+          '$presentLocationName $weatherInfo',
           style: TextStyle(
               color: themeNotifier.isDarkMode ? Colors.white : Colors.black),
         ),
         leading: IconButton(
           onPressed: () {
             themeNotifier.toggleTheme();
-            getLocation();
+            getWheatherInfo();
           },
           color: Theme.of(context).iconTheme.color,
           iconSize: 20,
@@ -302,12 +312,12 @@ class _NewsAppState extends State<NewsApp> {
             themeNotifier.isDarkMode
                 ? Icons.light_mode_outlined
                 : Icons.dark_mode_outlined,
-            color: themeNotifier.isDarkMode ? Colors.white : Colors.black ,
+            color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
           ),
         ),
         toolbarHeight: 38,
         titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
-        backgroundColor: Theme.of(context).appBarTheme.color,
+        //backgroundColor: Theme.of(context).appBarTheme.color,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -323,7 +333,6 @@ class _NewsAppState extends State<NewsApp> {
                 padding: EdgeInsets.only(bottom: 5),
               ),
             ),
-            Divider(),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshNews,
