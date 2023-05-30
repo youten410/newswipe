@@ -88,14 +88,66 @@ class _NewsAppState extends State<NewsApp> {
     }
   }
 
-  void getLocation() async {
+  //位置情報取得
+  Future<String> getLocation() async {
     try {
+      //アクセス許可要求
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // ユーザーが許可を拒否した場合の処理
+          print("Location permissions denied");
+          return "Permission denied"; // エラーメッセージを返す
+        }
+      }
+
+      // ユーザーが許可したら位置情報を取得
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low);
-          print('positon:$position');
+      var location = extractCoordinates(position.toString());
+      var keido = '129.9521775';//location[1];
+      var ido = '33.6495819';//location[0];
+      var coordinates = keido + ',' + ido;
+
+
+      final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
+      final response = await http.get(Uri.parse(
+          'https://maps.googleapis.com/maps/api/geocode/json?latlng=$ido,$keido&key=$googleAPIKey&language=ja'));
+      var decodedResponse = json.decode(response.body);
+      var cityName = decodedResponse['results'][0]['address_components'][1]
+              ['long_name']
+          .toString();
+      var prefectureName = decodedResponse['results'][0]['address_components']
+              [2]['long_name']
+          .toString();
+      var presentLocationName = prefectureName + cityName;
+      
+      print('場所:$presentLocationName');
+
+      return presentLocationName;
     } catch (e) {
       print(e);
+      return "Error: $e"; // エラーメッセージを返す
     }
+  }
+
+  //正規表現で緯度、軽度を抽出
+  List<String> extractCoordinates(String location) {
+    RegExp latExp = RegExp(r'Latitude: (\d+\.\d+)', multiLine: true);
+    RegExp lonExp = RegExp(r'Longitude: (\d+\.\d+)', multiLine: true);
+
+    Match? latMatch = latExp.firstMatch(location);
+    Match? lonMatch = lonExp.firstMatch(location);
+
+    String? lat = latMatch?.group(1);
+    String? lon = lonMatch?.group(1);
+
+    if (lat == null || lon == null) {
+      throw Exception('Failed to extract coordinates');
+    }
+
+    return [lat, lon];
   }
 
   //天気情報取得パラメータ
