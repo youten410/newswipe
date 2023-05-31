@@ -29,6 +29,8 @@ class _NewsAppState extends State<NewsApp> {
   String weatherInfo = "Loading...";
   String presentLocationName = 'Loading...';
 
+  String splitedAdress = '';
+
   List items = [];
   String status = '';
 
@@ -88,39 +90,50 @@ class _NewsAppState extends State<NewsApp> {
     try {
       print('位置情報取得開始');
       //アクセス許可要求
-      // LocationPermission permission = await Geolocator.checkPermission();
-      // if (permission == LocationPermission.denied) {
-      //   permission = await Geolocator.requestPermission();
-      //   if (permission == LocationPermission.denied) {
-      //     // ユーザーが許可を拒否した場合の処理
-      //     print("Location permissions denied");
-      //     return "Permission denied"; // エラーメッセージを返す
-      //   }
-      // }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // ユーザーが許可を拒否した場合の処理
+          print("Location permissions denied");
+          return "Permission denied"; // エラーメッセージを返す
+        }
+      }
 
       // ユーザーが許可したら位置情報を取得
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low);
       var location = extractCoordinates(position.toString());
-      var keido = '133.6137351299371'; //location[1];
-      var ido = '33.535685882374985'; //location[0];
+      var keido = location[1];
+      var ido = location[0];
       var coordinates = keido + ',' + ido;
 
-      print(coordinates);
+      print('coordinates');
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
       final response = await http.get(Uri.parse(
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=$ido,$keido&key=$googleAPIKey&language=ja'));
       var decodedResponse = json.decode(response.body);
-      var cityName = decodedResponse['results'][0]['address_components'][1]
+
+      String address = decodedResponse['plus_code']['compound_code'];
+
+      print(address);
+
+      int separatorIndex = address.lastIndexOf('、');
+      splitedAdress = address.substring(separatorIndex + 1);
+
+      print('splitedAdress : $splitedAdress');
+
+      var cityName = decodedResponse['results'][0]['address_components'][3]
               ['long_name']
           .toString();
       var prefectureName = decodedResponse['results'][0]['address_components']
               [2]['long_name']
           .toString();
       presentLocationName = prefectureName + cityName;
-
-      print('場所:$presentLocationName');
+      print('場所:$splitedAdress');
+      
+      setState(() {});
 
       return coordinates;
     } catch (e) {
@@ -298,7 +311,7 @@ class _NewsAppState extends State<NewsApp> {
         elevation: 0.0,
         title: Text(
           //天気アイコンのサイズ変更
-          '$presentLocationName $weatherInfo',
+          '$splitedAdress $weatherInfo',
           style: TextStyle(
               color: themeNotifier.isDarkMode ? Colors.white : Colors.black),
         ),
