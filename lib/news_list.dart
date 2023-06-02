@@ -43,14 +43,21 @@ class _NewsAppState extends State<NewsApp> {
   String url = '';
 
   Future<void> getData(category) async {
-    var url =
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    print('NewsAPI呼び出し開始');
     //print(url);
-    var response = await Dio().get(url);
-    status = response.data['status'];
-    items = response.data['articles'];
-    setState(() {});
-    //print(status);
+    final response = await http.get(Uri.parse(
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa'));
+    var newsData = json.decode(response.body);
+    //print(newsData);
+
+    status = newsData['status'];
+    items = newsData['articles'];
+
+    setState(() {
+      print('描画中');
+    });
+    print('描画終了');
+
   }
 
   Future<void> _refreshNews() async {
