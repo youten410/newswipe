@@ -124,8 +124,6 @@ class _NewsAppState extends State<NewsApp> {
 
       String address = decodedResponse['plus_code']['compound_code'];
 
-      print(address);
-
       int separatorIndex = address.lastIndexOf('、');
       splitedAdress = address.substring(separatorIndex + 1);
 
@@ -139,9 +137,10 @@ class _NewsAppState extends State<NewsApp> {
           .toString();
       presentLocationName = prefectureName + cityName;
       print('場所:$splitedAdress');
-      
-      setState(() {});
 
+      setState(() {});
+      
+      print('coordinates : $coordinates');
       return coordinates;
     } catch (e) {
       print(e);
@@ -178,16 +177,6 @@ class _NewsAppState extends State<NewsApp> {
     final weather = judgeWeather(precipitationIntensity);
     //print('天気: $weather');
     return weather;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    url =
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    getData(category);
-    getLocation();
-    initWeatherInfo();
   }
 
   void initWeatherInfo() async {
