@@ -42,18 +42,17 @@ class _NewsAppState extends State<NewsApp> {
 
   String url = '';
 
-  //表示言語変更
-  List menuItem = ['フランス', '米国', '英国', 'ドイツ', '日本', 'イタリア', 'カナダ'];
+  List language = ['フランス', '米国', '英国', 'ドイツ', '日本', 'イタリア', 'カナダ'];
   String country = 'jp';
   int countryIndex = 4;
 
-  //ニュースAPIの実行
-  Future<void> getData(category) async {
+
+  Future<void> getData(category,country) async {
     print('NewsAPI呼び出し開始');
-    final response = await http.get(Uri.parse(
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&country=$country&apiKey=d29107383eac4c97989831bb265caaaa'));
-    var newsData = json.decode(response.body);
-    print(country);
+    var requestUrl = 'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    print(requestUrl);
+    final response = await http.get(Uri.parse(requestUrl));
+    var newsData = json.decode(response.body); 
 
     status = newsData['status'];
     items = newsData['articles'];
@@ -65,13 +64,13 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   Future<void> _refreshNews() async {
-    await getData(category);
+    await getData(category,country);
   }
 
   //天気情報取得
   Future<double> getPrecipitationIntensity(
       String appId, String coordinates) async {
-    // print('coordinates : $coordinates');
+    print('coordinates : $coordinates');
     final url = Uri.https('map.yahooapis.jp', '/weather/V1/place', {
       'appid': appId,
       'coordinates': coordinates,
@@ -81,7 +80,7 @@ class _NewsAppState extends State<NewsApp> {
 
     final response = await http.get(url);
     final data = json.decode(response.body);
-    //print(data);
+    print(data);
     return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
         ['Rainfall'];
   }
@@ -119,7 +118,7 @@ class _NewsAppState extends State<NewsApp> {
       var ido = location[0];
       var coordinates = keido + ',' + ido;
 
-      // print('coordinates');
+      print('coordinates');
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
       final response = await http.get(Uri.parse(
@@ -198,7 +197,7 @@ class _NewsAppState extends State<NewsApp> {
     super.initState();
     getLocation();
     initWeatherInfo();
-    getData(category);
+    getData(category,country);
   }
 
   //カテゴリーボタンのウィジェット
@@ -289,7 +288,7 @@ class _NewsAppState extends State<NewsApp> {
                   categoryIndex = 5;
                   break;
               }
-              getData(category);
+              getData(category,country);
             });
           },
           child: Text(
@@ -347,14 +346,66 @@ class _NewsAppState extends State<NewsApp> {
             },
           ),
         ],
-
         toolbarHeight: 38,
         titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
-        //backgroundColor: Theme.of(context).appBarTheme.color,
       ),
       endDrawer: Drawer(
         backgroundColor: themeNotifier.isDarkMode ? Colors.black : Colors.white,
-      ),
+          child: ListView.builder(
+        itemCount: language.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Column(
+            children: [
+              ListTile(
+                  title: Text(
+                    language[index],
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  onTap: () {
+                    switch (language[index]) {
+                      case 'フランス':
+                        country = 'fr';
+                        countryIndex = 0;
+                        break;
+                      case '米国':
+                        country = 'us';
+                        countryIndex = 1;
+                        break;
+                      case '英国':
+                        country = 'gb';
+                        countryIndex = 2;
+                        break;
+                      case 'ドイツ':
+                        country = 'de';
+                        countryIndex = 3;
+                        break;
+                      case '日本':
+                        country = 'jp';
+                        countryIndex = 4;
+                        break;
+                      case 'イタリア':
+                        country = 'it';
+                        countryIndex = 5;
+                        break;
+                      case 'カナダ':
+                        country = 'ca';
+                        countryIndex = 6;
+                        break;
+                    }
+                    getData(category, country);
+                    Navigator.pop(context);
+                  },
+                  ),
+              Divider(
+                color: Colors.grey.shade400,
+              ),
+            ],
+          );
+        },
+      )),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
