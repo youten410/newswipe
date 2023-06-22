@@ -325,12 +325,19 @@ class _NewsAppState extends State<NewsApp> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(
-          //天気アイコンのサイズ変更
-          '$splitedAdress $weatherInfo',
-          style: TextStyle(
-              color: themeNotifier.isDarkMode ? Colors.white : Colors.black),
-        ),
+        title: showMarquee 
+        ? SizedBox(
+            width: MediaQuery.of(context).size.width, 
+            height: 40,
+            child: Marquee(
+              text: '$splitedAdress $weatherInfo',
+              style: TextStyle(
+                color: themeNotifier.isDarkMode ? Colors.white : Colors.black
+                ),
+                velocity: 30,
+                blankSpace: 50,
+              ),
+            ):null,
         leading: IconButton(
           onPressed: () {
             themeNotifier.toggleTheme();
