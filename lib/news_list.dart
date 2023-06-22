@@ -36,35 +36,155 @@ class _NewsAppState extends State<NewsApp> {
 
   String itemKey = '';
 
-  List<String> categoryList = ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'];
+  //drawerに表示するメニュー
+  List language = ['日本語', 'English'];
+
+  //カテゴリタブ
+  String currentLanguage = '日本語';
+
+  Map<String, List<String>> categoryList = {
+    '日本語': ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'],
+    'English': [
+      'Economy',
+      'Entertainment',
+      'Health',
+      'Science',
+      'Technology' 'Sports'
+    ]
+  };
+
+//カテゴリーボタンのウィジェット
+  Widget buildCategoryList(BuildContext context, int index) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+      child: Container(
+        width: 120,
+        child: ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
+              if (selectedButtonIndex == index) {
+                var hoge = 'ヘルス';
+                switch (hoge) {
+                  case '経済':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  case 'エンタメ':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  case 'ヘルス':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  case '科学':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  case 'スポーツ':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  case 'テクノロジー':
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                  default:
+                    return themeNotifier.isDarkMode
+                        ? Colors.white
+                        : Colors.black;
+                }
+              }
+              //カテゴリボタンのボックスの色　クリックされていない時　ダーク/ライト
+              return themeNotifier.isDarkMode
+                  ? Colors.grey.shade800
+                  : Colors.white;
+            },
+          ), foregroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (selectedButtonIndex == index) {
+                //カテゴリボタンのクリックされた時の色　ライト/ダーク
+                return themeNotifier.isDarkMode ? Colors.black : Colors.white;
+              }
+              //カテゴリボタンのクリックされていない時の色　ライト/ダーク
+              return themeNotifier.isDarkMode ? Colors.white : Colors.black;
+            },
+          )),
+          onPressed: () {
+            print(
+                "${categoryList[currentLanguage]![index].toString()}が選択されました");
+            selectedButtonIndex = index;
+            switch (categoryList[currentLanguage]![index].toString()) {
+              case '経済':
+              case 'English':
+                category = 'business';
+                break;
+              case 'エンタメ':
+              case 'Entertainment':
+                category = 'entertainment';
+                break;
+              case 'ヘルス':
+              case 'Health':
+                category = 'health';
+                break;
+              case '科学':
+              case 'Science':
+                category = 'science';
+                break;
+              case 'スポーツ':
+              case 'Sports':
+                category = 'sports';
+                break;
+              case 'テクノロジー':
+              case 'Technology':
+                category = 'technology';
+                break;
+            }
+            //getData(category, country);
+            setState(() {});
+          },
+          child: Text(
+            categoryList[currentLanguage]![index].toString(),
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
   String category = 'business';
   int categoryIndex = 0;
 
+  String country = 'jp';
+  int countryIndex = 0;
+
+  //記事URL？
   String url = '';
 
-  List language = ['フランス', '米国', '英国', 'ドイツ', '日本', 'イタリア', 'カナダ'];
-  String country = 'jp';
-  int countryIndex = 4;
-
-
-  Future<void> getData(category,country) async {
+  //ニュースAPIリクエスト
+  Future<void> getData(category, country) async {
     print('NewsAPI呼び出し開始');
-    var requestUrl = 'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
+    print(currentLanguage);
+    var requestUrl =
+        'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
     print(requestUrl);
     final response = await http.get(Uri.parse(requestUrl));
-    var newsData = json.decode(response.body); 
+    var newsData = json.decode(response.body);
 
     status = newsData['status'];
     items = newsData['articles'];
 
     setState(() {
       print('描画中');
-    });
+    });          
     print('描画終了');
   }
 
   Future<void> _refreshNews() async {
-    await getData(category,country);
+    //await //getData(category, country);
   }
 
   //天気情報取得
@@ -80,7 +200,6 @@ class _NewsAppState extends State<NewsApp> {
 
     final response = await http.get(url);
     final data = json.decode(response.body);
-    print(data);
     return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
         ['Rainfall'];
   }
@@ -197,109 +316,7 @@ class _NewsAppState extends State<NewsApp> {
     super.initState();
     getLocation();
     initWeatherInfo();
-    getData(category,country);
-  }
-
-  //カテゴリーボタンのウィジェット
-  Widget buildCategoryList(BuildContext context, int index) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-      child: Container(
-        width: 100,
-        child: ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
-              if (selectedButtonIndex == index) {
-                switch (categoryList[index]) {
-                  case '経済':
-                    //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case 'エンタメ':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case 'ヘルス':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case '科学':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case 'スポーツ':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case 'テクノロジー':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  default:
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                }
-              }
-              //カテゴリボタンのボックスの色　クリックされていない時　ダーク/ライト
-              return themeNotifier.isDarkMode
-                  ? Colors.grey.shade800
-                  : Colors.white;
-            },
-          ), foregroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
-              if (selectedButtonIndex == index) {
-                //カテゴリボタンのクリックされた時の色　ライト/ダーク
-                return themeNotifier.isDarkMode ? Colors.black : Colors.white;
-              }
-              //カテゴリボタンのクリックされていない時の色　ライト/ダーク
-              return themeNotifier.isDarkMode ? Colors.white : Colors.black;
-            },
-          )),
-          onPressed: () {
-            setState(() {
-              selectedButtonIndex = index;
-              switch (categoryList[index]) {
-                case '経済':
-                  category = 'business';
-                  categoryIndex = 0;
-                  break;
-                case 'エンタメ':
-                  category = 'entertainment';
-                  categoryIndex = 1;
-                  break;
-                case 'ヘルス':
-                  category = 'health';
-                  categoryIndex = 2;
-                  break;
-                case '科学':
-                  category = 'science';
-                  categoryIndex = 3;
-                  break;
-                case 'スポーツ':
-                  category = 'sports';
-                  categoryIndex = 4;
-                  break;
-                case 'テクノロジー':
-                  category = 'technology';
-                  categoryIndex = 5;
-                  break;
-              }
-              getData(category,country);
-            });
-          },
-          child: Text(
-            categoryList[index],
-            style: TextStyle(
-              fontSize: 10,
-            ),
-          ),
-        ),
-      ),
-    );
+    //getData(category, country);
   }
 
   //ニュース表示のウィジェット
@@ -350,62 +367,47 @@ class _NewsAppState extends State<NewsApp> {
         titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
       ),
       endDrawer: Drawer(
-        backgroundColor: themeNotifier.isDarkMode ? Colors.black : Colors.white,
+          backgroundColor:
+              themeNotifier.isDarkMode ? Colors.black : Colors.white,
           child: ListView.builder(
-        itemCount: language.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            children: [
-              ListTile(
-                  title: Text(
-                    language[index],
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
+            itemCount: language.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      language[index],
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: themeNotifier.isDarkMode
+                            ? Colors.white
+                            : Colors.black,
+                      ),
                     ),
+                    onTap: () {
+                      switch (language[index]) {
+                        case '日本語':
+                          country = 'jp';
+                          currentLanguage = '日本語';
+                          break;
+                        case 'English':
+                          country = 'us';
+                          currentLanguage = 'English';
+                          break;
+                      }
+                      //getData(category, country);
+                      print('国:$country カテゴリ:$category');
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
                   ),
-                  onTap: () {
-                    switch (language[index]) {
-                      case 'フランス':
-                        country = 'fr';
-                        countryIndex = 0;
-                        break;
-                      case '米国':
-                        country = 'us';
-                        countryIndex = 1;
-                        break;
-                      case '英国':
-                        country = 'gb';
-                        countryIndex = 2;
-                        break;
-                      case 'ドイツ':
-                        country = 'de';
-                        countryIndex = 3;
-                        break;
-                      case '日本':
-                        country = 'jp';
-                        countryIndex = 4;
-                        break;
-                      case 'イタリア':
-                        country = 'it';
-                        countryIndex = 5;
-                        break;
-                      case 'カナダ':
-                        country = 'ca';
-                        countryIndex = 6;
-                        break;
-                    }
-                    getData(category, country);
-                    Navigator.pop(context);
-                  },
+                  Divider(
+                    color: Colors.grey.shade400,
                   ),
-              Divider(
-                color: Colors.grey.shade400,
-              ),
-            ],
-          );
-        },
-      )),
+                ],
+              );
+            },
+          )),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -415,7 +417,7 @@ class _NewsAppState extends State<NewsApp> {
               height: 40,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: categoryList.length,
+                itemCount: 5,
                 itemBuilder: buildCategoryList,
                 padding: EdgeInsets.only(bottom: 5),
               ),
