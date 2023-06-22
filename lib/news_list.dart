@@ -42,13 +42,18 @@ class _NewsAppState extends State<NewsApp> {
 
   String url = '';
 
+  //表示言語変更
+  List menuItem = ['フランス', '米国', '英国', 'ドイツ', '日本', 'イタリア', 'カナダ'];
+  String country = 'jp';
+  int countryIndex = 4;
+
+  //ニュースAPIの実行
   Future<void> getData(category) async {
     print('NewsAPI呼び出し開始');
-    //print(url);
     final response = await http.get(Uri.parse(
-        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&apiKey=d29107383eac4c97989831bb265caaaa'));
+        'https://newsapi.org/v2/top-headlines?country=jp&category=$category&country=$country&apiKey=d29107383eac4c97989831bb265caaaa'));
     var newsData = json.decode(response.body);
-    //print(newsData);
+    print(country);
 
     status = newsData['status'];
     items = newsData['articles'];
@@ -66,7 +71,7 @@ class _NewsAppState extends State<NewsApp> {
   //天気情報取得
   Future<double> getPrecipitationIntensity(
       String appId, String coordinates) async {
-    print('coordinates : $coordinates');
+    // print('coordinates : $coordinates');
     final url = Uri.https('map.yahooapis.jp', '/weather/V1/place', {
       'appid': appId,
       'coordinates': coordinates,
@@ -76,7 +81,7 @@ class _NewsAppState extends State<NewsApp> {
 
     final response = await http.get(url);
     final data = json.decode(response.body);
-    print(data);
+    //print(data);
     return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
         ['Rainfall'];
   }
@@ -114,7 +119,7 @@ class _NewsAppState extends State<NewsApp> {
       var ido = location[0];
       var coordinates = keido + ',' + ido;
 
-      print('coordinates');
+      // print('coordinates');
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
       final response = await http.get(Uri.parse(
@@ -184,14 +189,6 @@ class _NewsAppState extends State<NewsApp> {
     print('getWheatherInfoの呼び出し');
     weatherInfo = await getWheatherInfo(coordinates);
     setState(() {});
-  }
-
-  Future<void> _syncLikedItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    final likedItemsList = prefs.getStringList('likedItems') ?? [];
-    setState(() {
-      likedItems = likedItemsList.toSet();
-    });
   }
 
   bool isIconChanged = false;
@@ -331,9 +328,32 @@ class _NewsAppState extends State<NewsApp> {
             color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
           ),
         ),
+        actions: <Widget>[
+          Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                color: Theme.of(context).iconTheme.color,
+                iconSize: 20,
+                icon: Icon(
+                  themeNotifier.isDarkMode
+                      ? Icons.language_outlined
+                      : Icons.language_outlined,
+                  color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
+                ),
+              );
+            },
+          ),
+        ],
+
         toolbarHeight: 38,
         titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
         //backgroundColor: Theme.of(context).appBarTheme.color,
+      ),
+      endDrawer: Drawer(
+        backgroundColor: themeNotifier.isDarkMode ? Colors.black : Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -379,10 +399,10 @@ class _NewsAppState extends State<NewsApp> {
                                   ? Colors.white
                                   : Colors.black,
                               trailing: Image.network(
-                                items[index]['urlToImage'] ?? 'https://1.bp.blogspot.com/-zPZ0OW06M0A/Xlyf6yxwZHI/AAAAAAABXq0/wxIcEtCRXbU0Vu2Ufogbb8iEG66KiZedACNcBGAsYHQ/s400/no_image_logo.png',
+                                items[index]['urlToImage'] ??
+                                    'https://1.bp.blogspot.com/-zPZ0OW06M0A/Xlyf6yxwZHI/AAAAAAABXq0/wxIcEtCRXbU0Vu2Ufogbb8iEG66KiZedACNcBGAsYHQ/s400/no_image_logo.png',
                                 width: 100,
-                              )           
-                              )
+                              ))
                         ],
                       ),
                     );
