@@ -18,7 +18,6 @@ class ThemeNotifier extends ChangeNotifier {
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
@@ -26,7 +25,6 @@ Future<void> main() async {
     ),
   );
 }
-
 
 
 class MyApp extends StatelessWidget {
