@@ -57,7 +57,6 @@ class _NewsAppState extends State<NewsApp> {
       print('描画中');
     });
     print('描画終了');
-
   }
 
   Future<void> _refreshNews() async {
@@ -139,7 +138,7 @@ class _NewsAppState extends State<NewsApp> {
       print('場所:$splitedAdress');
 
       setState(() {});
-      
+
       print('coordinates : $coordinates');
       return coordinates;
     } catch (e) {
@@ -195,6 +194,8 @@ class _NewsAppState extends State<NewsApp> {
     });
   }
 
+  bool isIconChanged = false;
+
   @override
   void initState() {
     super.initState();
@@ -202,8 +203,6 @@ class _NewsAppState extends State<NewsApp> {
     initWeatherInfo();
     getData(category);
   }
-
-  bool isIconChanged = false;
 
   //カテゴリーボタンのウィジェット
   Widget buildCategoryList(BuildContext context, int index) {
@@ -367,33 +366,23 @@ class _NewsAppState extends State<NewsApp> {
                       child: Column(
                         children: <Widget>[
                           ListTile(
-                            title: Text(
-                              items[index]['title'] ?? 'Unknown Title',
-                              style: TextStyle(
-                                  color: themeNotifier.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black),
-                            ),
-                            subtitle: Text(
-                                items[index]['author'] ?? 'Unknown Author'),
-                            textColor: themeNotifier.isDarkMode
-                                ? Colors.white
-                                : Colors.black,
-                            trailing: Column(
-                              mainAxisSize: MainAxisSize.min,
-                            ),
-                            onTap: () async {
-                              final url = Uri.parse(
-                                  items[index]['url'] ?? 'Unknown Title');
-                              // ignore: deprecated_member_use
-                              if (await canLaunch(url.toString())) {
-                                // ignore: deprecated_member_use
-                                await launch(url.toString());
-                              } else {
-                                print("Can't launch url");
-                              }
-                            },
-                          ),
+                              title: Text(
+                                items[index]['title'] ?? 'Unknown Title',
+                                style: TextStyle(
+                                    color: themeNotifier.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              subtitle: Text(
+                                  items[index]['author'] ?? 'Unknown Author'),
+                              textColor: themeNotifier.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
+                              trailing: Image.network(
+                                items[index]['urlToImage'] ?? 'https://1.bp.blogspot.com/-zPZ0OW06M0A/Xlyf6yxwZHI/AAAAAAABXq0/wxIcEtCRXbU0Vu2Ufogbb8iEG66KiZedACNcBGAsYHQ/s400/no_image_logo.png',
+                                width: 100,
+                              )           
+                              )
                         ],
                       ),
                     );
