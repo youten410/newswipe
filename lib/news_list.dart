@@ -12,6 +12,8 @@ import 'main.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:marquee/marquee.dart';
+import 'package:news_app/weather.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -179,29 +181,12 @@ class _NewsAppState extends State<NewsApp> {
 
     setState(() {
       print('描画中');
-    });          
+    });
     print('描画終了');
   }
 
   Future<void> _refreshNews() async {
     //await //getData(category, country);
-  }
-
-  //天気情報取得
-  Future<double> getPrecipitationIntensity(
-      String appId, String coordinates) async {
-    print('coordinates : $coordinates');
-    final url = Uri.https('map.yahooapis.jp', '/weather/V1/place', {
-      'appid': appId,
-      'coordinates': coordinates,
-      'interval': '10',
-      'output': 'json',
-    });
-
-    final response = await http.get(url);
-    final data = json.decode(response.body);
-    return data['Feature'][0]['Property']['WeatherList']['Weather'][0]
-        ['Rainfall'];
   }
 
   String judgeWeather(double precipitationIntensity) {
@@ -219,25 +204,23 @@ class _NewsAppState extends State<NewsApp> {
     try {
       print('位置情報取得開始');
       //アクセス許可要求
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          // ユーザーが許可を拒否した場合の処理
-          print("Location permissions denied");
-          return "Permission denied"; // エラーメッセージを返す
-        }
-      }
+      // LocationPermission permission = await Geolocator.checkPermission();
+      // if (permission == LocationPermission.denied) {
+      //   permission = await Geolocator.requestPermission();
+      //   if (permission == LocationPermission.denied) {
+      //     // ユーザーが許可を拒否した場合の処理
+      //     print("Location permissions denied");
+      //     return "Permission denied"; // エラーメッセージを返す
+      //   }
+      // }
 
-      // ユーザーが許可したら位置情報を取得
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low);
-      var location = extractCoordinates(position.toString());
-      var keido = location[1];
-      var ido = location[0];
-      var coordinates = keido + ',' + ido;
-
-      print('coordinates');
+      // // ユーザーが許可したら位置情報を取得
+      // Position position = await Geolocator.getCurrentPosition(
+      //     desiredAccuracy: LocationAccuracy.low);
+      // var location = extractCoordinates(position.toString());
+      var keido = -2.0943; //location[1];
+      var ido = 57.1497; //location[0];
+      var coordinates = keido.toString() + ',' + ido.toString();
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
       final response = await http.get(Uri.parse(
@@ -291,14 +274,16 @@ class _NewsAppState extends State<NewsApp> {
   //天気情報取得パラメータ
   Future<String> getWheatherInfo(String coordinates) async {
     print('天気情報取得開始');
-    final appId = 'dj00aiZpPURvU0RNSTBwRzd6ViZzPWNvbnN1bWVyc2VjcmV0Jng9ZTc-';
-    final precipitationIntensity =
-        await getPrecipitationIntensity(appId, coordinates);
-    print('降水強度: $precipitationIntensity');
+    var latitude = coordinates.split(',')[0];
+    var longitude = coordinates.split(',')[1];
+    var url =
+        'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=apparent_temperature,weathercode&forecast_days=1';
+    var response = await http.get(Uri.parse(url));
+    //天気予報の判断
+    var weatherCondition = weatherDescription(response.body);
 
-    final weather = judgeWeather(precipitationIntensity);
-    //print('天気: $weather');
-    return weather;
+    print(weatherCondition);
+    return weatherCondition;
   }
 
   void initWeatherInfo() async {
@@ -311,11 +296,18 @@ class _NewsAppState extends State<NewsApp> {
 
   bool isIconChanged = false;
 
+  bool showMarquee = false;
+
   @override
   void initState() {
     super.initState();
     getLocation();
     initWeatherInfo();
+    Future.delayed(Duration(milliseconds: 100), () {
+      setState(() {
+        showMarquee = true;
+      });
+    });
     //getData(category, country);
   }
 
