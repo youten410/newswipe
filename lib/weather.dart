@@ -86,7 +86,7 @@ String weatherDescription(jsonData) {
     67: '氷雨',
     68: '雨と雪',
     69: '大雨と雪',
-    70: '時折Ï雪',
+    70: '時折雪',
     71: '小雪',
     72: 'ときどき雪',
     73: '雪',
@@ -119,9 +119,8 @@ String weatherDescription(jsonData) {
   };
 
   int morningWeatherCode = 98; //weatherCodes[8]; // 8:00の天気
-  int afternoonWeatherCode = 42;
-  weatherCodes[14]; // 14:00の天気
-  int eveningWeatherCode = weatherCodes[20]; // 20:00の天気
+  int afternoonWeatherCode = 42;//weatherCodes[14]; // 14:00の天気
+  int eveningWeatherCode = 79;//weatherCodes[20]; // 20:00の天気
 
   String morningWeather =
       classifyWeather(weatherDictionary[morningWeatherCode] ?? "不明");
@@ -130,7 +129,7 @@ String weatherDescription(jsonData) {
   String eveningWeather =
       classifyWeather(weatherDictionary[eveningWeatherCode] ?? "不明");
 
-  return "${morningWeather}→${afternoonWeather}→${eveningWeather}";
+  return "\u{1F557}:${morningWeather} / \u{1F551}:${afternoonWeather} / \u{1F557}:${eveningWeather}";
 }
 
 String classifyWeather(String weather) {
@@ -141,7 +140,6 @@ String classifyWeather(String weather) {
     "氷雨": "ひょう",
     "濃い霧": "煙霧",
     "大雪": "雪",
-    "激しい雨": "雨",
     "激しい雨": "雨",
     "快晴": "快晴",
     "おおむね晴れ": "晴れ",
@@ -154,11 +152,7 @@ String classifyWeather(String weather) {
     "曇り": "曇り",
     "???": "???",
     "霧": "煙霧",
-    "霧": "煙霧",
-    "霧": "煙霧",
     "雷": "雷",
-    "にわか雨": "雨",
-    "にわか雨": "雨",
     "にわか雨": "雨",
     "孤立した雷雨": "雷",
     "突風": "砂じん嵐",
@@ -172,74 +166,39 @@ String classifyWeather(String weather) {
     "小雪": "雪",
     "小雪または雨雪混じりのにわか雨": "みぞれ",
     "霧の可能性": "煙霧",
-    "孤立した雷雨": "雷",
     "砂嵐": "砂じん嵐",
-    "砂嵐": "砂じん嵐",
-    "砂嵐": "砂じん嵐",
-    "激しい砂嵐": "砂じん嵐",
-    "激しい砂嵐": "砂じん嵐",
     "激しい砂嵐": "砂じん嵐",
     "スノーフラッシャー": "地ふぶき",
-    "大雪": "雪",
     "流れ雪": "雪",
     "重い雪": "雪",
     "パッチ状の霧": "煙霧",
-    "パッチ状の霧": "煙霧",
-    "霧": "煙霧",
-    "霧": "煙霧",
-    "霧": "煙霧",
-    "濃霧": "煙霧",
-    "濃霧": "煙霧",
     "濃霧": "煙霧",
     "氷結霧": "煙霧",
     "凍てつく霧": "煙霧",
     "弱い霧雨": "霧雨",
-    "弱い霧雨": "霧雨",
     "時折降る霧雨": "霧雨",
-    "霧雨": "霧雨",
     "時折強い霧雨": "霧雨",
     "激しい霧雨": "霧雨",
-    "氷雨": "ひょう",
-    "氷雨": "ひょう",
-    "霧雨と雨": "霧雨",
     "霧雨と雨": "霧雨",
     "時雨": "雨",
-    "小雨": "雨",
-    "時雨": "雨",
-    "雨": "雨",
     "ときどき強い雨": "雨",
-    "激しい雨": "雨",
-    "氷雨": "ひょう",
-    "氷雨": "ひょう",
     "雨と雪": "みぞれ",
     "大雨と雪": "みぞれ",
-    "時折Ï雪": "雪",
-    "小雪": "雪",
+    "時折雪": "雪",
     "ときどき雪": "雪",
-    "雪": "雪",
     "ときどき大雪": "雪",
-    "大雪": "雪",
     "ダイヤモンドダスト": "雪",
     "雪の粒": "雪",
     "雪の結晶": "雪",
     "氷の粒": "あられ",
-    "にわか雨": "雨",
-    "激しい雨": "雨",
     "激しいにわか雨": "雨",
     "雨と雪のシャワー": "みぞれ",
     "激しい雨と雪": "みぞれ",
     "スノーシャワー": "雪",
     "激しい雪のシャワー": "雪",
-    "小雪または雨雪混じりのにわか雨": "みぞれ",
     "小雪または雨雪混じりの激しいにわか雨": "みぞれ",
     "雹": "ひょう",
     "激しいあられ": "あられ",
-    "雷雨": "雷",
-    "雷雨": "雷",
-    "雷雨": "雷",
-    "雷雨": "雷",
-    "雷雨": "雷",
-    "雷雨": "雷",
     "激しい雷雨": "雷",
     "砂嵐を伴う激しい雷雨": "雷",
     "雹または突風を伴う激しい雷雨": "雷"
@@ -261,7 +220,7 @@ String classifyWeather(String weather) {
     "あられ": "\u{1F328}",
     "ひょう": "\u{1F328}",
     "雷": "\u{26A1}",
-    "???": "\n{2753}"
+    "???": "\u{2753}"
   };
 
   if (categories.containsKey(weather)) {

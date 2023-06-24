@@ -321,7 +321,7 @@ class _NewsAppState extends State<NewsApp> {
                 width: MediaQuery.of(context).size.width,
                 height: 40,
                 child: Marquee(
-                  text: '$splitedAdress $weatherInfo',
+                  text: '$splitedAdress   $weatherInfo',
                   style: TextStyle(
                       color: themeNotifier.isDarkMode
                           ? Colors.white
