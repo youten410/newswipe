@@ -146,7 +146,7 @@ class _NewsAppState extends State<NewsApp> {
                 category = 'technology';
                 break;
             }
-            //getData(category, country);
+            getData(category, country);
             setState(() {});
           },
           child: Text(
@@ -205,22 +205,22 @@ class _NewsAppState extends State<NewsApp> {
     try {
       print('位置情報取得開始');
       //アクセス許可要求
-      // LocationPermission permission = await Geolocator.checkPermission();
-      // if (permission == LocationPermission.denied) {
-      //   permission = await Geolocator.requestPermission();
-      //   if (permission == LocationPermission.denied) {
-      //     // ユーザーが許可を拒否した場合の処理
-      //     print("Location permissions denied");
-      //     return "Permission denied"; // エラーメッセージを返す
-      //   }
-      // }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // ユーザーが許可を拒否した場合の処理
+          print("Location permissions denied");
+          return "Permission denied"; // エラーメッセージを返す
+        }
+      }
 
-      // // ユーザーが許可したら位置情報を取得
-      // Position position = await Geolocator.getCurrentPosition(
-      //     desiredAccuracy: LocationAccuracy.low);
-      // var location = extractCoordinates(position.toString());
-      var keido = -2.0943; //location[1];
-      var ido = 57.1497; //location[0];
+      // ユーザーが許可したら位置情報を取得
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low);
+      var location = extractCoordinates(position.toString());
+      var keido = location[1];
+      var ido = location[0];
       var coordinates = keido.toString() + ',' + ido.toString();
 
       final googleAPIKey = 'AIzaSyCe5jXTKg2WbntQzK4oO3doAEJS0b5W93o';
@@ -275,8 +275,9 @@ class _NewsAppState extends State<NewsApp> {
   //天気情報取得パラメータ
   Future<String> getWheatherInfo(String coordinates) async {
     print('天気情報取得開始');
-    var latitude = coordinates.split(',')[0];
-    var longitude = coordinates.split(',')[1];
+    print(coordinates);
+    var latitude = coordinates.split(',')[1];
+    var longitude = coordinates.split(',')[0];
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=apparent_temperature,weathercode&forecast_days=1';
     var response = await http.get(Uri.parse(url));
@@ -289,6 +290,7 @@ class _NewsAppState extends State<NewsApp> {
     print('getLocationの呼び出し');
     String coordinates = await getLocation();
     print('getWheatherInfoの呼び出し');
+    print('取得する天気の座標$coordinates');
     weatherInfo = await getWheatherInfo(coordinates);
     setState(() {});
   }
@@ -307,7 +309,7 @@ class _NewsAppState extends State<NewsApp> {
         showMarquee = true;
       });
     });
-    //getData(category, country);
+    getData(category, country);
   }
 
   //ニュース表示のウィジェット
@@ -395,7 +397,7 @@ class _NewsAppState extends State<NewsApp> {
                           currentLanguage = 'English';
                           break;
                       }
-                      //getData(category, country);
+                      getData(category, country);
                       print('国:$country カテゴリ:$category');
                       setState(() {});
                       Navigator.pop(context);
