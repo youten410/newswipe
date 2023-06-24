@@ -455,7 +455,18 @@ class _NewsAppState extends State<NewsApp> {
                                 items[index]['urlToImage'] ??
                                     'https://1.bp.blogspot.com/-zPZ0OW06M0A/Xlyf6yxwZHI/AAAAAAABXq0/wxIcEtCRXbU0Vu2Ufogbb8iEG66KiZedACNcBGAsYHQ/s400/no_image_logo.png',
                                 width: 100,
-                              ))
+                              ),
+                              onTap: () async {
+                                final url = Uri.parse(
+                                    items[index]['url'] ?? 'Unknown Title');
+                                // ignore: deprecated_member_use
+                                if (await canLaunch(url.toString())) {
+                                  // ignore: deprecated_member_use
+                                  await launch(url.toString());
+                                } else {
+                                  print("Can't launch url");
+                                }
+                              })
                         ],
                       ),
                     );
