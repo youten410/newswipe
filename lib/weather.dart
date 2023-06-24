@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 String weatherDescription(jsonData) {
@@ -104,7 +105,7 @@ String weatherDescription(jsonData) {
     86: '激しい雪のシャワー',
     87: '小雪または雨雪混じりのにわか雨',
     88: '小雪または雨雪混じりの激しいにわか雨',
-    89: '雹（ひょう',
+    89: '雹',
     90: '激しいあられ',
     91: '雷雨',
     92: '雷雨',
@@ -117,80 +118,155 @@ String weatherDescription(jsonData) {
     99: '雹または突風を伴う激しい雷雨'
   };
 
-  int morningWeatherCode = weatherCodes[8]; // 8:00の天気
-  int afternoonWeatherCode = weatherCodes[14]; // 14:00の天気
+  int morningWeatherCode = 98; //weatherCodes[8]; // 8:00の天気
+  int afternoonWeatherCode = 42;
+  weatherCodes[14]; // 14:00の天気
   int eveningWeatherCode = weatherCodes[20]; // 20:00の天気
 
-
-
-  String morningWeather = classifyWeather(weatherDictionary[morningWeatherCode] ?? "不明");
-  String afternoonWeather = classifyWeather(weatherDictionary[afternoonWeatherCode] ?? "不明");
-  String eveningWeather = classifyWeather(weatherDictionary[eveningWeatherCode] ?? "不明");
+  String morningWeather =
+      classifyWeather(weatherDictionary[morningWeatherCode] ?? "不明");
+  String afternoonWeather =
+      classifyWeather(weatherDictionary[afternoonWeatherCode] ?? "不明");
+  String eveningWeather =
+      classifyWeather(weatherDictionary[eveningWeatherCode] ?? "不明");
 
   return "${morningWeather}→${afternoonWeather}→${eveningWeather}";
 }
 
 String classifyWeather(String weather) {
   Map<String, String> categories = {
+    "厚い巻層雲": "曇り",
+    "暴風雪": "雪",
+    "暴風": "砂じん嵐",
+    "氷雨": "ひょう",
+    "濃い霧": "煙霧",
+    "大雪": "雪",
+    "激しい雨": "雨",
+    "激しい雨": "雨",
     "快晴": "快晴",
     "おおむね晴れ": "晴れ",
     "主に晴れ": "晴れ",
     "長い晴れ間": "晴れ",
-    "雲の切れ間": "晴れ",
     "一部曇り": "薄曇り",
+    "雲の切れ間": "薄曇り",
     "やや曇り": "薄曇り",
     "主に曇り": "曇り",
     "曇り": "曇り",
+    "???": "???",
     "霧": "煙霧",
-    "濃霧": "煙霧",
-    "パッチ状の霧": "煙霧",
-    "氷結霧": "煙霧",
-    "凍てつく霧": "煙霧",
+    "霧": "煙霧",
+    "霧": "煙霧",
+    "雷": "雷",
+    "にわか雨": "雨",
+    "にわか雨": "雨",
+    "にわか雨": "雨",
+    "孤立した雷雨": "雷",
+    "突風": "砂じん嵐",
+    "吹き出し": "砂じん嵐",
+    "霧雨の可能性": "霧雨",
+    "雨の可能性": "雨",
+    "雪の可能性": "雪",
+    "小雨と雪": "みぞれ",
+    "軽い氷雨": "ひょう",
+    "小雨": "雨",
+    "小雪": "雪",
+    "小雪または雨雪混じりのにわか雨": "みぞれ",
+    "霧の可能性": "煙霧",
+    "孤立した雷雨": "雷",
+    "砂嵐": "砂じん嵐",
+    "砂嵐": "砂じん嵐",
     "砂嵐": "砂じん嵐",
     "激しい砂嵐": "砂じん嵐",
-    "流れ雪": "地ふぶき",
-    "霧の可能性": "霧",
-    "霧雨の可能性": "霧雨",
+    "激しい砂嵐": "砂じん嵐",
+    "激しい砂嵐": "砂じん嵐",
+    "スノーフラッシャー": "地ふぶき",
+    "大雪": "雪",
+    "流れ雪": "雪",
+    "重い雪": "雪",
+    "パッチ状の霧": "煙霧",
+    "パッチ状の霧": "煙霧",
+    "霧": "煙霧",
+    "霧": "煙霧",
+    "霧": "煙霧",
+    "濃霧": "煙霧",
+    "濃霧": "煙霧",
+    "濃霧": "煙霧",
+    "氷結霧": "煙霧",
+    "凍てつく霧": "煙霧",
+    "弱い霧雨": "霧雨",
     "弱い霧雨": "霧雨",
     "時折降る霧雨": "霧雨",
     "霧雨": "霧雨",
     "時折強い霧雨": "霧雨",
     "激しい霧雨": "霧雨",
-    "激しい雨": "雨",
-    "雨の可能性": "雨",
-    "にわか雨": "雨",
+    "氷雨": "ひょう",
+    "氷雨": "ひょう",
+    "霧雨と雨": "霧雨",
+    "霧雨と雨": "霧雨",
+    "時雨": "雨",
+    "小雨": "雨",
+    "時雨": "雨",
     "雨": "雨",
     "ときどき強い雨": "雨",
-    "霧雨と雨": "雨",
-    "雨と雪": "雨",
-    "大雨と雪": "雨",
-    "雨と雪のシャワー": "雨",
-    "激しい雨と雪": "雨",
-    "激しいにわか雨": "雨",
-    "小雨と雪": "みぞれ",
-    "軽い氷雨": "みぞれ",
-    "氷雨": "みぞれ",
-    "厚い巻層雲": "雪",
-    "暴風雪": "雪",
-    "大雪": "雪",
-    "雪の可能性": "雪",
+    "激しい雨": "雨",
+    "氷雨": "ひょう",
+    "氷雨": "ひょう",
+    "雨と雪": "みぞれ",
+    "大雨と雪": "みぞれ",
+    "時折Ï雪": "雪",
     "小雪": "雪",
-    "小雪または雨雪混じりのにわか雨": "雪",
-    "スノーフラッシャー": "雪",
-    "重い雪": "雪",
-    "時折雪": "雪",
     "ときどき雪": "雪",
     "雪": "雪",
     "ときどき大雪": "雪",
+    "大雪": "雪",
     "ダイヤモンドダスト": "雪",
     "雪の粒": "雪",
     "雪の結晶": "雪",
-    "氷の粒": "雪",
+    "氷の粒": "あられ",
+    "にわか雨": "雨",
+    "激しい雨": "雨",
+    "激しいにわか雨": "雨",
+    "雨と雪のシャワー": "みぞれ",
+    "激しい雨と雪": "みぞれ",
     "スノーシャワー": "雪",
     "激しい雪のシャワー": "雪",
+    "小雪または雨雪混じりのにわか雨": "みぞれ",
+    "小雪または雨雪混じりの激しいにわか雨": "みぞれ",
+    "雹": "ひょう",
+    "激しいあられ": "あられ",
+    "雷雨": "雷",
+    "雷雨": "雷",
+    "雷雨": "雷",
+    "雷雨": "雷",
+    "雷雨": "雷",
+    "雷雨": "雷",
+    "激しい雷雨": "雷",
+    "砂嵐を伴う激しい雷雨": "雷",
+    "雹または突風を伴う激しい雷雨": "雷"
   };
+
+  Map<String, String> emojiUnicodeInfo = {
+    "快晴": "\u{2600}",
+    "晴れ": "\u{2600}",
+    "薄曇り": "\u{26C5}",
+    "曇り": "\u{2601}",
+    "煙霧": "\u{1F32B}",
+    "砂じん嵐": "\u{1F32A}",
+    "地ふぶき": "\u{1F32A}",
+    "霧": "\u{1F32B}",
+    "霧雨": "\u{1F327}",
+    "雨": "\u{2614}",
+    "みぞれ": "\u{2614}",
+    "雪": "\u{2603}",
+    "あられ": "\u{1F328}",
+    "ひょう": "\u{1F328}",
+    "雷": "\u{26A1}",
+    "???": "\n{2753}"
+  };
+
   if (categories.containsKey(weather)) {
-    return categories[weather]!;
+    var emoji = emojiUnicodeInfo[categories[weather]]!;
+    return emoji;
   } else {
     return "該当するカテゴリが存在しません";
   }

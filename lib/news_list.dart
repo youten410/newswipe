@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:marquee/marquee.dart';
 import 'package:news_app/weather.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -279,11 +280,9 @@ class _NewsAppState extends State<NewsApp> {
     var url =
         'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=apparent_temperature,weathercode&forecast_days=1';
     var response = await http.get(Uri.parse(url));
-    //天気予報の判断
-    var weatherCondition = weatherDescription(response.body);
-
-    print(weatherCondition);
-    return weatherCondition;
+    //天気予報の結果に応じた絵文字のunicodeを受け取る
+    var emoji = weatherDescription(response.body);
+    return emoji;
   }
 
   void initWeatherInfo() async {
