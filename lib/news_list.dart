@@ -187,17 +187,7 @@ class _NewsAppState extends State<NewsApp> {
   }
 
   Future<void> _refreshNews() async {
-    //await //getData(category, country);
-  }
-
-  String judgeWeather(double precipitationIntensity) {
-    if (precipitationIntensity == 0) {
-      return '☀️';
-    } else if (precipitationIntensity < 2) {
-      return '☁️';
-    } else {
-      return '☂️';
-    }
+    await getData(category, country);
   }
 
   //位置情報取得
@@ -309,7 +299,7 @@ class _NewsAppState extends State<NewsApp> {
         showMarquee = true;
       });
     });
-    getData(category, country);
+    //getData(category, country);
   }
 
   //ニュース表示のウィジェット
