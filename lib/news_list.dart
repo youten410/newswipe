@@ -433,7 +433,7 @@ class _NewsAppState extends State<NewsApp> {
                   } else {
                     var candidates = snapshot.data;
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.50,
+                      //height: MediaQuery.of(context).size.height * 1.0,
                       child: AppinioSwiper(
                         backgroundCardsCount: 2,
                         swipeOptions: const AppinioSwipeOptions.all(),
@@ -442,11 +442,12 @@ class _NewsAppState extends State<NewsApp> {
                         onSwiping: (AppinioSwiperDirection direction) {
                           debugPrint(direction.toString());
                         },
+                        //カードの高さ、幅を変更
                         padding: const EdgeInsets.only(
                           left: 25,
                           right: 25,
-                          top: 50,
-                          bottom: 40,
+                          top: 100,
+                          bottom: 200,
                         ),
                         cardsCount: candidates!.length,
                         cardsBuilder: (BuildContext context, int index) {
