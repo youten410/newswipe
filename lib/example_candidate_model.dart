@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:webfeed/webfeed.dart'; // you might need to add this package to your pubspec.yaml
+import 'package:webfeed/webfeed.dart';
 
 class ExampleCandidateModel {
   String? title;

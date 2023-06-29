@@ -20,6 +20,7 @@ import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:news_app/example_candidate_model.dart';
 import 'package:news_app/example_card.dart';
+import 'bottom_button.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -419,17 +420,15 @@ class _NewsAppState extends State<NewsApp> {
             ),
             Expanded(
               child: FutureBuilder<List<ExampleCandidateModel>>(
-                future: fetchCandidateModels(category,country),
+                future: fetchCandidateModels(category, country),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<ExampleCandidateModel>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
-                        child:
-                            CircularProgressIndicator()); // ダイアログ表示
+                        child: CircularProgressIndicator()); // ダイアログ表示
                   } else if (snapshot.hasError) {
                     return Center(
-                        child: Text(
-                            'Error: ${snapshot.error}')); // エラー表示
+                        child: Text('Error: ${snapshot.error}')); // エラー表示
                   } else {
                     var candidates = snapshot.data;
                     return SizedBox(
@@ -459,6 +458,12 @@ class _NewsAppState extends State<NewsApp> {
                 },
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                unswipeButton(controller),
+              ],
+            )
           ],
         ),
       ),
