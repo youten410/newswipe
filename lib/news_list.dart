@@ -70,29 +70,34 @@ class _NewsAppState extends State<NewsApp> {
             (Set<MaterialState> states) {
               //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
               if (selectedButtonIndex == index) {
-                var hoge = 'ヘルス';
-                switch (hoge) {
+                switch (category) {
                   case '経済':
+                  case 'Busiess':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'エンタメ':
+                  case 'Entertainment':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'ヘルス':
+                  case 'Health':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
-                  case '科学':
+                  case 'サイエンス':
+                  case 'Science':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'スポーツ':
+                  case 'Sports':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'テクノロジー':
+                  case 'Technology':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
@@ -147,7 +152,7 @@ class _NewsAppState extends State<NewsApp> {
                 category = 'TECHNOLOGY';
                 break;
             }
-            rssFeed = fetchRssFeed(category);
+            rssFeed = fetchRssFeed(category, country);
             setState(() {});
           },
           child: Text(
@@ -162,23 +167,23 @@ class _NewsAppState extends State<NewsApp> {
   String category = 'BUSINESS';
   int categoryIndex = 0;
 
-  String country = 'jp';
+  String country = 'hl=ja&gl=JP&ceid=JP:ja';
   int countryIndex = 0;
 
   //記事URL？
   String url = '';
 
   //ニュースAPIリクエスト
-  Future<RssFeed> fetchRssFeed(category) async {
+  Future<RssFeed> fetchRssFeed(category, country) async {
     print(category);
     var response = await http.get(Uri.parse(
-        'https://news.google.com/news/rss/headlines/section/topic/$category.ja_jp/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9?ned=jp&hl=ja&gl=JP'));
+        'https://news.google.com/news/rss/headlines/section/topic/$category.ja_jp/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9?$country'));
     var channel = RssFeed.parse(response.body);
     return channel;
   }
 
   Future<void> _refreshNews() async {
-    await fetchRssFeed(category);
+    await fetchRssFeed(category, country);
   }
 
   //位置情報取得
@@ -292,7 +297,7 @@ class _NewsAppState extends State<NewsApp> {
         showMarquee = true;
       });
     });
-    rssFeed = fetchRssFeed(category);
+    rssFeed = fetchRssFeed(category, country);
   }
 
   //ニュース表示のウィジェット
@@ -372,15 +377,15 @@ class _NewsAppState extends State<NewsApp> {
                     onTap: () {
                       switch (language[index]) {
                         case '日本語':
-                          country = 'jp';
+                          country = 'hl=ja&gl=JP&ceid=JP:ja';
                           currentLanguage = '日本語';
                           break;
                         case 'English':
-                          country = 'us';
+                          country = 'hl=en-US&gl=US&ceid=US:en';
                           currentLanguage = 'English';
                           break;
                       }
-                      fetchRssFeed(category);
+                      rssFeed = fetchRssFeed(category, country);
                       print('国:$country カテゴリ:$category');
                       setState(() {});
                       Navigator.pop(context);
@@ -424,8 +429,17 @@ class _NewsAppState extends State<NewsApp> {
                       itemBuilder: (context, index) {
                         final item = snapshot.data?.items?[index];
                         return Card(
+                          color: themeNotifier.isDarkMode
+                              ? Colors.grey.shade800
+                              : Colors.white,
                           child: ListTile(
-                              title: Text(item?.title ?? 'No title'),
+                              title: Text(
+                                item?.title ?? 'No title',
+                                style: TextStyle(
+                                    color: themeNotifier.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
                               onTap: () async {
                                 final url =
                                     Uri.parse(item?.link ?? 'Unknown Title');
