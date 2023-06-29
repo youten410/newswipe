@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
@@ -15,6 +14,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:marquee/marquee.dart';
 import 'package:news_app/weather.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:convert' as convert;
+import 'package:webfeed/webfeed.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -122,31 +123,31 @@ class _NewsAppState extends State<NewsApp> {
             selectedButtonIndex = index;
             switch (categoryList[currentLanguage]![index].toString()) {
               case '経済':
-              case 'English':
-                category = 'business';
+              case 'Busiess':
+                category = 'BUSINESS';
                 break;
               case 'エンタメ':
               case 'Entertainment':
-                category = 'entertainment';
+                category = 'ENTERTAINMENT';
                 break;
               case 'ヘルス':
               case 'Health':
-                category = 'health';
+                category = 'HEALTH';
                 break;
-              case '科学':
+              case 'サイエンス':
               case 'Science':
-                category = 'science';
+                category = 'SCIENCE';
                 break;
               case 'スポーツ':
               case 'Sports':
-                category = 'sports';
+                category = 'SPORTS';
                 break;
               case 'テクノロジー':
               case 'Technology':
-                category = 'technology';
+                category = 'TECHNOLOGY';
                 break;
             }
-            getData(category, country);
+            rssFeed = fetchRssFeed(category);
             setState(() {});
           },
           child: Text(
@@ -158,7 +159,7 @@ class _NewsAppState extends State<NewsApp> {
     );
   }
 
-  String category = 'business';
+  String category = 'BUSINESS';
   int categoryIndex = 0;
 
   String country = 'jp';
@@ -168,26 +169,16 @@ class _NewsAppState extends State<NewsApp> {
   String url = '';
 
   //ニュースAPIリクエスト
-  Future<void> getData(category, country) async {
-    print('NewsAPI呼び出し開始');
-    print(currentLanguage);
-    var requestUrl =
-        'https://newsapi.org/v2/top-headlines?country=$country&category=$category&apiKey=d29107383eac4c97989831bb265caaaa';
-    print(requestUrl);
-    final response = await http.get(Uri.parse(requestUrl));
-    var newsData = json.decode(response.body);
-
-    status = newsData['status'];
-    items = newsData['articles'];
-
-    setState(() {
-      print('描画中');
-    });
-    print('描画終了');
+  Future<RssFeed> fetchRssFeed(category) async {
+    print(category);
+    var response = await http.get(Uri.parse(
+        'https://news.google.com/news/rss/headlines/section/topic/$category.ja_jp/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9?ned=jp&hl=ja&gl=JP'));
+    var channel = RssFeed.parse(response.body);
+    return channel;
   }
 
   Future<void> _refreshNews() async {
-    await getData(category, country);
+    await fetchRssFeed(category);
   }
 
   //位置情報取得
@@ -289,6 +280,8 @@ class _NewsAppState extends State<NewsApp> {
 
   bool showMarquee = false;
 
+  late Future<RssFeed> rssFeed;
+
   @override
   void initState() {
     super.initState();
@@ -299,7 +292,7 @@ class _NewsAppState extends State<NewsApp> {
         showMarquee = true;
       });
     });
-    //getData(category, country);
+    rssFeed = fetchRssFeed(category);
   }
 
   //ニュース表示のウィジェット
@@ -387,7 +380,7 @@ class _NewsAppState extends State<NewsApp> {
                           currentLanguage = 'English';
                           break;
                       }
-                      getData(category, country);
+                      fetchRssFeed(category);
                       print('国:$country カテゴリ:$category');
                       setState(() {});
                       Navigator.pop(context);
@@ -415,42 +408,27 @@ class _NewsAppState extends State<NewsApp> {
               ),
             ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: _refreshNews,
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // generate unique itemKey for each article
-                    String itemKey = md5
-                        .convert(utf8.encode(items[index]['url']))
-                        .toString();
-                    return Card(
-                      color: themeNotifier.isDarkMode
-                          ? Colors.grey.shade800
-                          : Colors.white,
-                      child: Column(
-                        children: <Widget>[
-                          ListTile(
-                              title: Text(
-                                items[index]['title'] ?? 'Unknown Title',
-                                style: TextStyle(
-                                    color: themeNotifier.isDarkMode
-                                        ? Colors.white
-                                        : Colors.black),
-                              ),
-                              subtitle: Text(
-                                  items[index]['author'] ?? 'Unknown Author'),
-                              textColor: themeNotifier.isDarkMode
-                                  ? Colors.white
-                                  : Colors.black,
-                              trailing: Image.network(
-                                items[index]['urlToImage'] ??
-                                    'https://1.bp.blogspot.com/-zPZ0OW06M0A/Xlyf6yxwZHI/AAAAAAABXq0/wxIcEtCRXbU0Vu2Ufogbb8iEG66KiZedACNcBGAsYHQ/s400/no_image_logo.png',
-                                width: 100,
-                              ),
+              child: FutureBuilder<RssFeed>(
+                future: rssFeed,
+                builder:
+                    (BuildContext context, AsyncSnapshot<RssFeed> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data?.items?.length,
+                      itemBuilder: (context, index) {
+                        final item = snapshot.data?.items?[index];
+                        return Card(
+                          child: ListTile(
+                              title: Text(item?.title ?? 'No title'),
                               onTap: () async {
-                                final url = Uri.parse(
-                                    items[index]['url'] ?? 'Unknown Title');
+                                final url =
+                                    Uri.parse(item?.link ?? 'Unknown Title');
                                 // ignore: deprecated_member_use
                                 if (await canLaunch(url.toString())) {
                                   // ignore: deprecated_member_use
@@ -458,12 +436,12 @@ class _NewsAppState extends State<NewsApp> {
                                 } else {
                                   print("Can't launch url");
                                 }
-                              })
-                        ],
-                      ),
+                              }),
+                        );
+                      },
                     );
-                  },
-                ),
+                  }
+                },
               ),
             ),
           ],

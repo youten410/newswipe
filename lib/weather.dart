@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:news_app/news_list.dart';
 
 String weatherDescription(jsonData) {
   var data = json.decode(jsonData);
