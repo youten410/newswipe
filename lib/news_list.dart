@@ -16,6 +16,10 @@ import 'package:news_app/weather.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert' as convert;
 import 'package:webfeed/webfeed.dart';
+import 'package:appinio_swiper/appinio_swiper.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:news_app/example_candidate_model.dart';
+import 'package:news_app/example_card.dart';
 
 Set<String> likedItems = {};
 bool isDarkMode = false;
@@ -29,6 +33,7 @@ class NewsApp extends StatefulWidget {
 }
 
 class _NewsAppState extends State<NewsApp> {
+  final AppinioSwiperController controller = AppinioSwiperController();
   late int selectedButtonIndex = 0;
   String weatherInfo = "Loading...";
   String presentLocationName = 'Loading...';
@@ -413,46 +418,41 @@ class _NewsAppState extends State<NewsApp> {
               ),
             ),
             Expanded(
-              child: FutureBuilder<RssFeed>(
-                future: rssFeed,
-                builder:
-                    (BuildContext context, AsyncSnapshot<RssFeed> snapshot) {
+              child: FutureBuilder<List<ExampleCandidateModel>>(
+                future: fetchCandidateModels(category,country),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<ExampleCandidateModel>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                        child:
+                            CircularProgressIndicator()); // ダイアログ表示
                   } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
+                    return Center(
+                        child: Text(
+                            'Error: ${snapshot.error}')); // エラー表示
                   } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data?.items?.length,
-                      itemBuilder: (context, index) {
-                        final item = snapshot.data?.items?[index];
-                        return Card(
-                          color: themeNotifier.isDarkMode
-                              ? Colors.grey.shade800
-                              : Colors.white,
-                          child: ListTile(
-                              title: Text(
-                                item?.title ?? 'No title',
-                                style: TextStyle(
-                                    color: themeNotifier.isDarkMode
-                                        ? Colors.white
-                                        : Colors.black),
-                              ),
-                              onTap: () async {
-                                final url =
-                                    Uri.parse(item?.link ?? 'Unknown Title');
-                                // ignore: deprecated_member_use
-                                if (await canLaunch(url.toString())) {
-                                  // ignore: deprecated_member_use
-                                  await launch(url.toString());
-                                } else {
-                                  print("Can't launch url");
-                                }
-                              }),
-                        );
-                      },
+                    var candidates = snapshot.data;
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.50,
+                      child: AppinioSwiper(
+                        backgroundCardsCount: 2,
+                        swipeOptions: const AppinioSwipeOptions.all(),
+                        unlimitedUnswipe: true,
+                        controller: controller,
+                        onSwiping: (AppinioSwiperDirection direction) {
+                          debugPrint(direction.toString());
+                        },
+                        padding: const EdgeInsets.only(
+                          left: 25,
+                          right: 25,
+                          top: 50,
+                          bottom: 40,
+                        ),
+                        cardsCount: candidates!.length,
+                        cardsBuilder: (BuildContext context, int index) {
+                          return ExampleCard(candidate: candidates[index]);
+                        },
+                      ),
                     );
                   }
                 },
