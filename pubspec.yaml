@@ -47,6 +47,8 @@ dependencies:
   marquee: ^2.2.3
   font_awesome_flutter: ^10.4.0
   webfeed: ^0.7.0
+  appinio_swiper: ^2.0.2
+  
 
 dev_dependencies:
   flutter_test:
