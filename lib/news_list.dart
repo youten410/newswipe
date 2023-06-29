@@ -450,7 +450,11 @@ class _NewsAppState extends State<NewsApp> {
                         ),
                         cardsCount: candidates!.length,
                         cardsBuilder: (BuildContext context, int index) {
-                          return ExampleCard(candidate: candidates[index]);
+                          return ExampleCard(
+                            candidate: candidates[index],
+                            cardIndex: index,
+                            totalCards: candidates.length,
+                          );
                         },
                       ),
                     );

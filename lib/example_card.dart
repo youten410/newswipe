@@ -7,16 +7,19 @@ import 'package:news_app/main.dart';
 
 class ExampleCard extends StatelessWidget {
   final ExampleCandidateModel candidate;
+  final int cardIndex;
+  final int totalCards;
 
   const ExampleCard({
     Key? key,
     required this.candidate,
+    required this.cardIndex,
+    required this.totalCards,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -50,17 +53,17 @@ class ExampleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  height: 5,
+                ),
                 Text(
                   candidate.title!,
                   style: TextStyle(
                     color:
                         themeNotifier.isDarkMode ? Colors.white : Colors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 16,
                   ),
-                ),
-                const SizedBox(
-                  height: 5,
                 ),
                 InkWell(
                   onTap: () async {
@@ -71,9 +74,23 @@ class ExampleCard extends StatelessWidget {
                   child: Text(
                     candidate.link!,
                     style: const TextStyle(
-                      color: Colors
-                          .blue, // Change the color to indicate that it's a link
-                      fontSize: 15,
+                      color: Colors.blue,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                //カード枚数表示
+                Center(
+                  child: Text(
+                    '${cardIndex + 1} / $totalCards',
+                    style: TextStyle(
+                      color: themeNotifier.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 10,
                     ),
                   ),
                 ),
