@@ -41,7 +41,7 @@ class _NewsAppState extends State<NewsApp> {
   String itemKey = '';
 
   //drawerに表示するメニュー
-  List language = ['日本語', 'English'];
+  List language = ['Japan', 'US'];
 
   //カテゴリタブ
   String currentLanguage = '日本語';
@@ -376,11 +376,11 @@ class _NewsAppState extends State<NewsApp> {
                     ),
                     onTap: () {
                       switch (language[index]) {
-                        case '日本語':
+                        case 'Japan':
                           country = 'hl=ja&gl=JP&ceid=JP:ja';
                           currentLanguage = '日本語';
                           break;
-                        case 'English':
+                        case 'US':
                           country = 'hl=en-US&gl=US&ceid=US:en';
                           currentLanguage = 'English';
                           break;
