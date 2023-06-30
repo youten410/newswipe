@@ -53,13 +53,13 @@ class _NewsAppState extends State<NewsApp> {
   String currentLanguage = '日本語';
 
   Map<String, List<String>> categoryList = {
-    '日本語': ['経済', 'エンタメ', 'ヘルス', '科学', 'スポーツ', 'テクノロジー'],
+    '日本語': ['エコノミー', 'エンタメ', 'ヘルス', 'サイエンス', 'テクノロジー'],
     'English': [
       'Economy',
       'Entertainment',
       'Health',
       'Science',
-      'Technology' 'Sports'
+      'Technology'
     ]
   };
 
@@ -77,33 +77,23 @@ class _NewsAppState extends State<NewsApp> {
               //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
               if (selectedButtonIndex == index) {
                 switch (category) {
-                  case '経済':
-                  case 'Busiess':
+                  case 'エコノミー':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'エンタメ':
-                  case 'Entertainment':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'ヘルス':
-                  case 'Health':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'サイエンス':
-                  case 'Science':
-                    return themeNotifier.isDarkMode
-                        ? Colors.white
-                        : Colors.black;
-                  case 'スポーツ':
-                  case 'Sports':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
                   case 'テクノロジー':
-                  case 'Technology':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
@@ -133,32 +123,23 @@ class _NewsAppState extends State<NewsApp> {
                 "${categoryList[currentLanguage]![index].toString()}が選択されました");
             selectedButtonIndex = index;
             switch (categoryList[currentLanguage]![index].toString()) {
-              case '経済':
-              case 'Busiess':
-                category = 'BUSINESS';
+              case 'エコノミー':
+                category = 'techplus/enterprise/corp';
                 break;
               case 'エンタメ':
-              case 'Entertainment':
-                category = 'ENTERTAINMENT';
+                category = 'entertainment/entertainment';
                 break;
               case 'ヘルス':
-              case 'Health':
-                category = 'HEALTH';
+                category = 'kurashi/life';
                 break;
               case 'サイエンス':
-              case 'Science':
-                category = 'SCIENCE';
-                break;
-              case 'スポーツ':
-              case 'Sports':
-                category = 'SPORTS';
+                category = 'techplus/technology/science';
                 break;
               case 'テクノロジー':
-              case 'Technology':
-                category = 'TECHNOLOGY';
+                category = 'techplus/technology';
                 break;
             }
-            rssFeed = fetchRssFeed(category, country);
+            rssFeed = fetchRssFeed(category);
             setState(() {});
           },
           child: Text(
@@ -170,27 +151,11 @@ class _NewsAppState extends State<NewsApp> {
     );
   }
 
-  String category = 'BUSINESS';
+  String category = 'techplus/enterprise/corp';
   int categoryIndex = 0;
 
   String country = 'hl=ja&gl=JP&ceid=JP:ja';
   int countryIndex = 0;
-
-  //記事URL？
-  String url = '';
-
-  //ニュースAPIリクエスト
-  Future<RssFeed> fetchRssFeed(category, country) async {
-    print(category);
-    var response = await http.get(Uri.parse(
-        'https://news.google.com/news/rss/headlines/section/topic/$category.ja_jp/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9?$country'));
-    var channel = RssFeed.parse(response.body);
-    return channel;
-  }
-
-  Future<void> _refreshNews() async {
-    await fetchRssFeed(category, country);
-  }
 
   //位置情報取得
   Future<String> getLocation() async {
@@ -303,7 +268,7 @@ class _NewsAppState extends State<NewsApp> {
         showMarquee = true;
       });
     });
-    rssFeed = fetchRssFeed(category, country);
+    rssFeed = fetchRssFeed(category);
   }
 
   //ニュース表示のウィジェット
@@ -391,7 +356,7 @@ class _NewsAppState extends State<NewsApp> {
                           currentLanguage = 'English';
                           break;
                       }
-                      rssFeed = fetchRssFeed(category, country);
+                      rssFeed = fetchRssFeed(category);
                       print('国:$country カテゴリ:$category');
                       setState(() {});
                       Navigator.pop(context);
@@ -445,7 +410,7 @@ class _NewsAppState extends State<NewsApp> {
                         padding: const EdgeInsets.only(
                           left: 25,
                           right: 25,
-                          top: 100,
+                          top: 50,
                           bottom: 200,
                         ),
                         cardsCount: candidates!.length,
