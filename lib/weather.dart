@@ -130,7 +130,7 @@ String weatherDescription(jsonData) {
   String eveningWeather =
       classifyWeather(weatherDictionary[eveningWeatherCode] ?? "不明");
 
-  return "\u{1F557}:${morningWeather} / \u{1F551}:${afternoonWeather} / \u{1F557}:${eveningWeather}";
+  return "朝:${morningWeather}  昼:${afternoonWeather}  夜:${eveningWeather}";
 }
 
 String classifyWeather(String weather) {
