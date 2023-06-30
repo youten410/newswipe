@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:provider/provider.dart';
 import 'example_candidate_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:news_app/main.dart';
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_web_browser/flutter_web_browser.dart';
+import 'package:link_preview_generator/link_preview_generator.dart';
 
 class ExampleCard extends StatelessWidget {
   final ExampleCandidateModel candidate;
@@ -94,6 +100,7 @@ class ExampleCard extends StatelessWidget {
                           ? Colors.white
                           : Colors.black,
                       fontSize: 10,
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
