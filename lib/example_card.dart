@@ -53,34 +53,37 @@ class ExampleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Text(
+                //   candidate.title!,
+                //   style: TextStyle(
+                //     color:
+                //         themeNotifier.isDarkMode ? Colors.white : Colors.black,
+                //     fontWeight: FontWeight.bold,
+                //     fontSize: 16,
+                //   ),
+                // ),
+                // Linkify(
+                //   onOpen: (link) async {
+                //     if (await canLaunch(link.url)) {
+                //       await launch(link.url);
+                //     }
+                //   },
+                //   text: candidate.link!,
+                //   style: const TextStyle(
+                //     color: Colors.blue,
+                //     fontSize: 14,
+                //   ),
+                //   linkStyle: const TextStyle(
+                //     color: Colors.blue,
+                //     fontSize: 14,
+                //   ),
+                // ),
+                LinkPreviewGenerator(
+                  key: ValueKey<String>(candidate.link!),
+                  link: candidate.link!,
+                ),
                 SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  candidate.title!,
-                  style: TextStyle(
-                    color:
-                        themeNotifier.isDarkMode ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                InkWell(
-                  onTap: () async {
-                    if (await canLaunch(candidate.link!)) {
-                      await launch(candidate.link!);
-                    }
-                  },
-                  child: Text(
-                    candidate.link!,
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
                 //カード枚数表示
                 Center(
