@@ -19,16 +19,16 @@ ExampleCandidateModel convertRssItemToCandidateModel(RssItem item) {
   );
 }
 
-Future<RssFeed> fetchRssFeed(String category, String country) async {
-  print(category);
+Future<RssFeed> fetchRssFeed(String category) async {
+  print('URL : https://news.mynavi.jp/rss/$category');
   var response = await http.get(Uri.parse(
-      'https://news.google.com/news/rss/headlines/section/topic/$category.ja_jp/%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9?$country'));
+      'https://news.mynavi.jp/rss/$category'));
   var channel = RssFeed.parse(response.body);
   return channel;
 }
 
 Future<List<ExampleCandidateModel>> fetchCandidateModels(String category, String country) async {
-  RssFeed feed = await fetchRssFeed(category, country);
+  RssFeed feed = await fetchRssFeed(category);
   List<ExampleCandidateModel> candidateModels = feed.items!.map(convertRssItemToCandidateModel).toList();
   return candidateModels;
 }
