@@ -119,9 +119,9 @@ String weatherDescription(jsonData) {
     99: '雹または突風を伴う激しい雷雨'
   };
 
-  int morningWeatherCode = 98; //weatherCodes[8]; // 8:00の天気
-  int afternoonWeatherCode = 42;//weatherCodes[14]; // 14:00の天気
-  int eveningWeatherCode = 79;//weatherCodes[20]; // 20:00の天気
+  int morningWeatherCode = weatherCodes[8]; // 8:00の天気
+  int afternoonWeatherCode = weatherCodes[14]; // 14:00の天気
+  int eveningWeatherCode = weatherCodes[20]; // 20:00の天気
 
   String morningWeather =
       classifyWeather(weatherDictionary[morningWeatherCode] ?? "不明");
