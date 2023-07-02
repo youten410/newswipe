@@ -53,14 +53,7 @@ class _NewsAppState extends State<NewsApp> {
   String currentLanguage = '日本語';
 
   Map<String, List<String>> categoryList = {
-    '日本語': ['エコノミー', 'エンタメ', 'ヘルス', 'サイエンス', 'テクノロジー'],
-    'English': [
-      'Economy',
-      'Entertainment',
-      'Health',
-      'Science',
-      'Technology'
-    ]
+    '日本語': ['ビジネス', 'エンタメ', 'ヘルス', 'サイエンス', 'テクノロジー'],
   };
 
 //カテゴリーボタンのウィジェット
@@ -77,7 +70,7 @@ class _NewsAppState extends State<NewsApp> {
               //カテゴリボタンのボックスの色　クリックされた時　ダーク/ライト
               if (selectedButtonIndex == index) {
                 switch (category) {
-                  case 'エコノミー':
+                  case 'ビジネス':
                     return themeNotifier.isDarkMode
                         ? Colors.white
                         : Colors.black;
@@ -123,7 +116,7 @@ class _NewsAppState extends State<NewsApp> {
                 "${categoryList[currentLanguage]![index].toString()}が選択されました");
             selectedButtonIndex = index;
             switch (categoryList[currentLanguage]![index].toString()) {
-              case 'エコノミー':
+              case 'ビジネス':
                 category = 'techplus/enterprise/corp';
                 break;
               case 'エンタメ':
@@ -305,70 +298,9 @@ class _NewsAppState extends State<NewsApp> {
             color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
           ),
         ),
-        actions: <Widget>[
-          Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                color: Theme.of(context).iconTheme.color,
-                iconSize: 20,
-                icon: Icon(
-                  themeNotifier.isDarkMode
-                      ? Icons.language_outlined
-                      : Icons.language_outlined,
-                  color: themeNotifier.isDarkMode ? Colors.white : Colors.black,
-                ),
-              );
-            },
-          ),
-        ],
         toolbarHeight: 38,
         titleTextStyle: Theme.of(context).primaryTextTheme.headline6,
       ),
-      endDrawer: Drawer(
-          backgroundColor:
-              themeNotifier.isDarkMode ? Colors.black : Colors.white,
-          child: ListView.builder(
-            itemCount: language.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      language[index],
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: themeNotifier.isDarkMode
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                    onTap: () {
-                      switch (language[index]) {
-                        case 'Japan':
-                          country = 'hl=ja&gl=JP&ceid=JP:ja';
-                          currentLanguage = '日本語';
-                          break;
-                        case 'US':
-                          country = 'hl=en-US&gl=US&ceid=US:en';
-                          currentLanguage = 'English';
-                          break;
-                      }
-                      rssFeed = fetchRssFeed(category);
-                      print('国:$country カテゴリ:$category');
-                      setState(() {});
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Divider(
-                    color: Colors.grey.shade400,
-                  ),
-                ],
-              );
-            },
-          )),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -407,11 +339,11 @@ class _NewsAppState extends State<NewsApp> {
                           debugPrint(direction.toString());
                         },
                         //カードの高さ、幅を変更
-                        padding: const EdgeInsets.only(
+                        padding: EdgeInsets.only(
                           left: 25,
                           right: 25,
                           top: 50,
-                          bottom: 200,
+                          bottom: 100,
                         ),
                         cardsCount: candidates!.length,
                         cardsBuilder: (BuildContext context, int index) {
@@ -427,12 +359,8 @@ class _NewsAppState extends State<NewsApp> {
                 },
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                unswipeButton(controller),
-              ],
-            )
+            unswipeButton(controller),
+            Padding(padding: const EdgeInsets.all(50.0), )
           ],
         ),
       ),
