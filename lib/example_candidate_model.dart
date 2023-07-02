@@ -5,10 +5,12 @@ import 'package:webfeed/webfeed.dart';
 class ExampleCandidateModel {
   String? title;
   String? link;
+  String? img;
 
   ExampleCandidateModel({
     this.title,
     this.link,
+    this.img
   });
 }
 
