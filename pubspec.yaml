@@ -48,6 +48,10 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   webfeed: ^0.7.0
   appinio_swiper: ^2.0.2
+  flutter_link_previewer: ^3.2.1
+  flutter_chat_types: ^3.6.1
+  flutter_web_browser: ^0.17.1
+  link_preview_generator: ^1.2.0
   
 
 dev_dependencies:
