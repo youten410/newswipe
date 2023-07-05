@@ -228,6 +228,6 @@ String classifyWeather(String weather) {
     var emoji = emojiUnicodeInfo[categories[weather]]!;
     return emoji;
   } else {
-    return "No Infomation";
+    return "No Info";
   }
 }

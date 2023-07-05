@@ -36,10 +36,10 @@ class NewsApp extends StatefulWidget {
 class _NewsAppState extends State<NewsApp> {
   final AppinioSwiperController controller = AppinioSwiperController();
   late int selectedButtonIndex = 0;
-  String weatherInfo = "Loading...";
-  String presentLocationName = 'Loading...';
-  String splitedAdress = 'Loading...';
-  String appBarText = '';
+  String weatherInfo = '';
+  String presentLocationName = '';
+  String splitedAdress = '';
+  late String appBarText = 'Loading...';
 
   List items = [];
   String status = '';
@@ -194,8 +194,6 @@ class _NewsAppState extends State<NewsApp> {
       presentLocationName = prefectureName + cityName;
       print('場所:$splitedAdress');
 
-      setState(() {});
-
       print('coordinates : $coordinates');
       return coordinates;
     } catch (e) {
@@ -229,12 +227,6 @@ class _NewsAppState extends State<NewsApp> {
       print(coordinates);
 
       var splitCoordinates = coordinates.split(',');
-
-      if (splitCoordinates.length != 2) {
-        throw FormatException(
-            'Invalid coordinates format. Expected format: longitude,latitude');
-      }
-
       var latitude = splitCoordinates[1];
       var longitude = splitCoordinates[0];
       var url =
@@ -258,11 +250,13 @@ class _NewsAppState extends State<NewsApp> {
 
       print('取得する天気の座標$coordinates');
       weatherInfo = await getWheatherInfo(coordinates);
-      appBarText = splitedAdress + weatherInfo;
+      appBarText = '$splitedAdress  $weatherInfo';
+      print(appBarText);
       setState(() {});
     } catch (e) {
       print('初期読み込みできない');
-      appBarText = 'Sorry,No available information😢';
+      appBarText = 'Sorry,No avalable infomation😢';
+      setState(() {});
     }
   }
 
@@ -277,7 +271,7 @@ class _NewsAppState extends State<NewsApp> {
     super.initState();
     getLocation();
     initWeatherInfo();
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(Duration(milliseconds: 600), () {
       setState(() {
         showMarquee = true;
       });
