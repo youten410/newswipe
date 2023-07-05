@@ -38,8 +38,8 @@ class _NewsAppState extends State<NewsApp> {
   late int selectedButtonIndex = 0;
   String weatherInfo = "Loading...";
   String presentLocationName = 'Loading...';
-
-  String splitedAdress = '';
+  String splitedAdress = 'Loading...';
+  String appBarText = '';
 
   List items = [];
   String status = '';
@@ -224,25 +224,46 @@ class _NewsAppState extends State<NewsApp> {
 
   //天気情報取得パラメータ
   Future<String> getWheatherInfo(String coordinates) async {
-    print('天気情報取得開始');
-    print(coordinates);
-    var latitude = coordinates.split(',')[1];
-    var longitude = coordinates.split(',')[0];
-    var url =
-        'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=apparent_temperature,weathercode&forecast_days=1';
-    var response = await http.get(Uri.parse(url));
-    //天気予報の結果に応じた絵文字のunicodeを受け取る
-    var emoji = weatherDescription(response.body);
-    return emoji;
+    try {
+      print('天気情報取得開始');
+      print(coordinates);
+
+      var splitCoordinates = coordinates.split(',');
+
+      if (splitCoordinates.length != 2) {
+        throw FormatException(
+            'Invalid coordinates format. Expected format: longitude,latitude');
+      }
+
+      var latitude = splitCoordinates[1];
+      var longitude = splitCoordinates[0];
+      var url =
+          'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=apparent_temperature,weathercode&forecast_days=1';
+      var response = await http.get(Uri.parse(url));
+
+      //天気予報の結果に応じた絵文字のunicodeを受け取る
+      var emoji = weatherDescription(response.body);
+      return emoji;
+    } catch (e) {
+      print("An error occurred: $e");
+      throw e; // あるいは、エラー状態を管理するためにカスタムエラーメッセージを投げることも可能です。
+    }
   }
 
   void initWeatherInfo() async {
-    print('getLocationの呼び出し');
-    String coordinates = await getLocation();
-    print('getWheatherInfoの呼び出し');
-    print('取得する天気の座標$coordinates');
-    weatherInfo = await getWheatherInfo(coordinates);
-    setState(() {});
+    try {
+      print('getLocationの呼び出し');
+      String coordinates = await getLocation();
+      print('getWheatherInfoの呼び出し');
+
+      print('取得する天気の座標$coordinates');
+      weatherInfo = await getWheatherInfo(coordinates);
+      appBarText = splitedAdress + weatherInfo;
+      setState(() {});
+    } catch (e) {
+      print('初期読み込みできない');
+      appBarText = 'Sorry,No available information😢';
+    }
   }
 
   bool isIconChanged = false;
@@ -275,7 +296,7 @@ class _NewsAppState extends State<NewsApp> {
                 width: MediaQuery.of(context).size.width,
                 height: 40,
                 child: Marquee(
-                  text: '$splitedAdress   $weatherInfo',
+                  text: appBarText,
                   style: TextStyle(
                       color: themeNotifier.isDarkMode
                           ? Colors.white
@@ -360,7 +381,9 @@ class _NewsAppState extends State<NewsApp> {
               ),
             ),
             unswipeButton(controller),
-            Padding(padding: const EdgeInsets.all(50.0), )
+            Padding(
+              padding: const EdgeInsets.all(50.0),
+            )
           ],
         ),
       ),
