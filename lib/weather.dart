@@ -125,6 +125,7 @@ String weatherDescription(jsonData) {
 
   String morningWeather =
       classifyWeather(weatherDictionary[morningWeatherCode] ?? "不明");
+  print(morningWeatherCode);
   String afternoonWeather =
       classifyWeather(weatherDictionary[afternoonWeatherCode] ?? "不明");
   String eveningWeather =
@@ -202,7 +203,8 @@ String classifyWeather(String weather) {
     "激しいあられ": "あられ",
     "激しい雷雨": "雷",
     "砂嵐を伴う激しい雷雨": "雷",
-    "雹または突風を伴う激しい雷雨": "雷"
+    "雹または突風を伴う激しい雷雨": "雷",
+    "霧雨": "霧雨"
   };
 
   Map<String, String> emojiUnicodeInfo = {
