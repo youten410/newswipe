@@ -19,12 +19,15 @@ class ThemeNotifier extends ChangeNotifier {
 
 Future<void> main() async {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+      ],
       child: MyApp(),
     ),
   );
 }
+
 
 
 class MyApp extends StatelessWidget {
