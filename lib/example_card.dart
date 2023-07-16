@@ -59,31 +59,6 @@ class ExampleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Text(
-                //   candidate.title!,
-                //   style: TextStyle(
-                //     color:
-                //         themeNotifier.isDarkMode ? Colors.white : Colors.black,
-                //     fontWeight: FontWeight.bold,
-                //     fontSize: 16,
-                //   ),
-                // ),
-                // Linkify(
-                //   onOpen: (link) async {
-                //     if (await canLaunch(link.url)) {
-                //       await launch(link.url);
-                //     }
-                //   },
-                //   text: candidate.link!,
-                //   style: const TextStyle(
-                //     color: Colors.blue,
-                //     fontSize: 14,
-                //   ),
-                //   linkStyle: const TextStyle(
-                //     color: Colors.blue,
-                //     fontSize: 14,
-                //   ),
-                // ),
                 LinkPreviewGenerator(
                   key: ValueKey<String>(candidate.link!),
                   link: candidate.link!,
