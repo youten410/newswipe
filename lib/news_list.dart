@@ -362,6 +362,7 @@ class _NewsAppState extends State<NewsApp> {
                         ),
                         cardsCount: candidates!.length,
                         cardsBuilder: (BuildContext context, int index) {
+                          debugPrint("Current card index: $index");
                           return ExampleCard(
                             candidate: candidates[index],
                             cardIndex: index,
