@@ -33,7 +33,7 @@ class NewsApp extends StatefulWidget {
   State<NewsApp> createState() => _NewsAppState();
 }
 
-class _NewsAppState extends State<NewsApp> {
+class _NewsAppState extends State<NewsApp>{
   final AppinioSwiperController controller = AppinioSwiperController();
   late int selectedButtonIndex = 0;
   String weatherInfo = '';
